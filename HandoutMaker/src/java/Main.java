@@ -5,7 +5,7 @@ import java.io.File;
 
 public class Main 
 {
-	private static short line = 0;
+	private static short lineNumber = 0;
 	
 	public static void main(String[] args)
 	{
@@ -39,17 +39,20 @@ public class Main
 	{
 		if(style.identifier.equals("(!§$%&/()=?)"))
 		{
-			System.out.println("Error loading style identifier; Check your style sheet in line: " + line);
+			System.out.println("Error loading style identifier; Check your style sheet in line: " + lineNumber);
 		}
 		
+		//style anwenden
 	}
 
 	private static Style loadNextStyle(File styleFile, boolean continueToNext) //same here, dachte mir man geht so reihe für reihe das style sheet durch und applied das nacheinander, das boolean sagt aus ob man zur nächsten Zeile gehen soll wegen der while-do-schleife (s.o.)
 	{
 		if(continueToNext)
 		{
-			line++;
+			lineNumber++;
 		}
+		
+		//TODO Nameing conventions
 		
 		//style in der line laden und returnen
 		
@@ -68,7 +71,7 @@ public class Main
 		private Style() //kb 5000 constructors zu erstellen wo man alles einzeln setzen kann, eher einfach setzen und einen MAIN constructor
 		{
 			identifier = "(!§$%&/()=?)"; //ersma random zeichen, damit dat nich gesucht wird, wenn die id fehlt
-			size = 12;
+			size = 12;	//ab hier so standardeinstellungen
 			type = "Times New Roman";
 			cursive = false;	
 			underlined = false;
