@@ -77,17 +77,17 @@ public class Main
 		
 		//Identifier auslesen
 		content.trim();	
-		style.identifier = content.substring(0, findIdentifierEnd(content));
+		style.identifier = content.substring(0, findCharacter(content, '"'));
 		content = content.replaceFirst(style.identifier + ";", "");
 		style.identifier.replaceFirst(String.valueOf(")+ String.valueOf("), "indent").replaceAll(String.valueOf('"'), "");
 		
 		while(!content.equals(""))
 		{
 			//Anderes auslesen
-			String temp = content.substring(0, findEndOfEntry(content));
+			String temp = content.substring(0, findCharacter(content, ';'));
 			content = content.replaceFirst(temp, "");
 			
-			switch (temp.substring(0, findEquals(temp)))
+			switch (temp.substring(0, findCharacter(temp, '=')))
 			{
 				case "style":
 				//TODO	
@@ -106,10 +106,10 @@ public class Main
 					break;
 				case "lineDistance":
 				//TODO
-						break;
+					break;
 				case "color":
 				//TODO
-						break;
+					break;
 				default: System.out.println("Error loading style property in line: " + lineNumber);				
 			}	
 		}
@@ -127,40 +127,15 @@ public class Main
 		return style;
 	}
 	
-	private static int findIdentifierEnd(String s)
+	private static int findCharacter(String s, Character c)
 	{
 		for(int i = 1; i < s.length(); i++)
 		{
-			if(s.charAt(i) == Character.valueOf('"'))
+			if(s.charAt(i) == Character.valueOf(c))
 			{
 				return i;
 			}
 		}
 		return -1;
 	}
-	
-	private static int findEndOfEntry(String s)
-	{
-		for(int i = 1; i < s.length(); i++)
-		{
-			if(s.charAt(i) == Character.valueOf(';'))
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
-	
-	private static int findEquals(String s)
-	{
-		for(int i = 1; i < s.length(); i++)
-		{
-			if(s.charAt(i) == Character.valueOf('='))
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
-	
 }
