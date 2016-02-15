@@ -1,4 +1,9 @@
-"$�";style=arial;size=14;type=1;underlined=true;
-
 mystyle
+  bold = true
+  cursive = false
+  underline = true
+yourstyle
+  format = 0
+  color = green
+
   
