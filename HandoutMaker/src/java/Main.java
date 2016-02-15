@@ -19,19 +19,19 @@ public class Main
 		if(!styleFile.exists())
 		{
 			System.out.println("Style sheet could not be found. Make sure the path and spelling are correct!");
-			System.exit(0); //kp ob man hier 0 oder was anderes raushauen soll, überlegs dir mal
+			System.exit(0); 
 		}
 		if(!targetFile.exists())
 		{
 			System.out.println("Target could not be found. Make sure the path and spelling are correct!");
-			System.exit(0); //kp ob man hier 0 oder was anderes raushauen soll, überlegs dir mal
+			System.exit(0); 
 		}
 		
 		Style style;
 		try 
 		{
 			BufferedReader reader = new BufferedReader(new FileReader(styleFile));
-			reader.mark(100);;
+			reader.mark(100);
 			
 			do
 			{
@@ -99,16 +99,16 @@ public class Main
 				//TODO
 					break;
 				case "underlinded":
-					//TODO
+				//TODO
 					break;
 				case "cursive":
 				//TODO
 					break;
 				case "lineDistance":
-					//TODO
+				//TODO
 						break;
 				case "color":
-					//TODO
+				//TODO
 						break;
 				default: System.out.println("Error loading style property in line: " + lineNumber);				
 			}	
