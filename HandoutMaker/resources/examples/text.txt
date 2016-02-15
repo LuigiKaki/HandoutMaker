@@ -1,1 +1,6 @@
- 
+$UEInwiefern haben sich meine Erwartugnen an dsa Praktikum erfüllt (Vergleich Erwartungen vs. Realität)?
+$UEWelche Erkenntnisse über den Beruf, das Tätigkeitsfeld und den Ausbildungsweg habe ich gewonnen?
+$UEGibt es Bereiche in dem Berufsfeld, über den ich gern mehr erfähren hätte?
+$UEInwiefern bin ich für den Beruf geeignet (Vergleich der individuellen Kompetenzen und Ziele mit den im Beruf gestellten Anforderugnen)?
+$UEWelche Konsequenzen hat das Praktikum für mein schulisches Weiterlernen und meinen persönlichen Bildungsweg?
+$UEWar das Praktikum eine konkrete Hilfe für meine Berufswahlentscheidung (Überprüfung des Berufswunsches)?
