@@ -1,8 +1,1 @@
-<html>
-  <head>
-    <title></title>
-    <meta content="">
-    <style></style>
-  </head>
-  <body></body>
-</html>
+"$Ü";style=arial;size=14;type=centered;underlined=true;
