@@ -1,1 +1,1 @@
-"$Ü";style=arial;size=14;type=centered;underlined=true;
+"$Ü";style=arial;size=14;type=1;underlined=true;
