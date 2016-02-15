@@ -1,10 +1,4 @@
 "$�";style=arial;size=14;type=1;underlined=true;
 
---JSON Version--
-{
-	"randistyle" : {
-		"bold" : "true",
-		"format" : "1",
-		"Color" : "233"
-	}
-}
+mystyle
+  

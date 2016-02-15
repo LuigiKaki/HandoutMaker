@@ -1,11 +1,11 @@
 package java;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.style.Style;
 
 public class Main 
 {
@@ -52,15 +52,15 @@ public class Main
 		System.exit(0);
 	}
 
-	private static void applyStyle(File target, Style style) //WIP und so (WIP = work in progress für die Ungebildeten)
+	private static void applyStyle(File target, Style style) //WIP und so (WIP = work in progress fï¿½r die Ungebildeten)
 	{
-		if(style.identifier.equals("(!§$%&/()=?)"))
+		if(style.identifier.equals("(!ï¿½$%&/()=?)"))
 		{
 			System.out.println("Error loading style identifier; Check your style sheet in line: " + lineNumber);
 			return;
 		}
 		
-		if(style.identifier.equals("indent")) //oder was auch immer du als option dafür verwenden willst
+		if(style.identifier.equals("indent")) //oder was auch immer du als option dafï¿½r verwenden willst
 		{
 			//style anwenden (indent)
 		}
@@ -70,7 +70,7 @@ public class Main
 		}
 	}
 
-	private static Style loadNextStyle(BufferedReader reader, boolean continueToNext) throws IOException //same here, dachte mir man geht so reihe für reihe das style sheet durch und applied das nacheinander, das boolean sagt aus ob man zur nächsten Zeile gehen soll wegen der while-do-schleife (s.o.)
+	private static Style loadNextStyle(BufferedReader reader, boolean continueToNext) throws IOException //same here, dachte mir man geht so reihe fï¿½r reihe das style sheet durch und applied das nacheinander, das boolean sagt aus ob man zur nï¿½chsten Zeile gehen soll wegen der while-do-schleife (s.o.)
 	{	
 		Style style = new Style();
 		String content = reader.readLine();
@@ -163,37 +163,4 @@ public class Main
 		return -1;
 	}
 	
-	private static class Style
-	{
-		//füg Variablen hinzu, wenn dir welche einfallen, hab bestimmt net alle, hau die dann auch unten in den constructor
-		private short size, format; //format = Blocksatz, zentriert etc., mir fiel kein besserer Name ein, datentyp muss vllt gewechselt werden, fürs erste: 0=rechts, 1 = mitte, 2 = links, 3 = block
-		private String style, identifier;
-		private boolean cursive, underlined;
-		private float lineDistance;
-		private Color color; //Kein Plan wie dat mit Farben abläuft, fürs erste mal die Java-Version benutzt 
-		
-		private Style() //kb 5000 constructors zu erstellen wo man alles einzeln setzen kann, eher einfach setzen und einen MAIN constructor
-		{
-			identifier = "(!§$%&/()=?)"; //ersma random zeichen, damit dat nich gesucht wird, wenn die id fehlt
-			size = 12;	//ab hier so standardeinstellungen
-			style = "Times New Roman";
-			cursive = false;	
-			underlined = false;
-			format = 0;
-			lineDistance = 1.0F;
-			color = Color.BLACK;
-		}
-		
-		private Style(String identifier, short size, short format, String style, boolean cursive, boolean underlined, float lineDistance, Color color)
-		{
-			this.identifier = identifier;
-			this.size = size;
-			this.style = style;
-			this.cursive = cursive;
-			this.underlined = underlined;
-			this.format = format;
-			this.lineDistance = lineDistance;
-			this.color = color;
-		}
-	}
 }
