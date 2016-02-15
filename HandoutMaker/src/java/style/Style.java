@@ -14,7 +14,6 @@ public class Style
 	
 	public Style() //kb 5000 constructors zu erstellen wo man alles einzeln setzen kann, eher einfach setzen und einen MAIN constructor
 	{
-		identifier = "(!�$%&/()=?)"; //ersma random zeichen, damit dat nich gesucht wird, wenn die id fehlt
 		size = 12;	//ab hier so standardeinstellungen
 		style = "Times New Roman";
 		cursive = false;	
