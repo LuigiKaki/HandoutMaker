@@ -4,6 +4,4 @@ mystyle
   underline = true
 yourstyle
   format = 0
-  color = green
-
-  
+  color = green  
