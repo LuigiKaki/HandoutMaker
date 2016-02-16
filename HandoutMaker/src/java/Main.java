@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.management.GarbageCollectorMXBean;
 import java.style.Style;
 import java.util.HashMap;
 
@@ -35,14 +34,25 @@ public class Main
 		try 
 		{
 			BufferedReader reader = new BufferedReader(new FileReader(styleFile));
-			reader.mark(100);
-		
-			do
+			
+			switch (reader.readLine().trim())
 			{
-				style = loadNextStyle(reader, true);
-				styles.put(style.identifier, style);
+				case "normal":
+					reader.mark(100);
+					do
+					{
+						style = loadNextStyle(reader, true);
+						styles.put(style.identifier, style);
+					}
+					while(!style.equals(loadNextStyle(reader, false)));
+					break;
+				case "indent":
+					//TODO HAU MA DEINE SCHEISSE HIER REIN
+					break;
+				default:
+					System.out.println("Make sure you define normal or indent reading mode in the first line!");
+					break;
 			}
-			while(!style.equals(loadNextStyle(reader, false)));
 		} 
 		catch (FileNotFoundException e)
 		{	
