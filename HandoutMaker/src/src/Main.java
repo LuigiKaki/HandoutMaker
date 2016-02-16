@@ -1,4 +1,4 @@
-package java;
+package src;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -6,8 +6,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.style.Style;
 import java.util.HashMap;
+
+import src.style.Style;
 
 public class Main 
 {

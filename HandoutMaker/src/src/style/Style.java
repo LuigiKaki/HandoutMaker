@@ -1,4 +1,4 @@
-package java.style;
+package src.style;
 
 import java.awt.Color;
 
