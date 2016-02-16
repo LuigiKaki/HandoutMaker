@@ -1,10 +1,12 @@
 package java;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
 import java.style.Style;
 import java.util.HashMap;
 
@@ -34,7 +36,7 @@ public class Main
 		{
 			BufferedReader reader = new BufferedReader(new FileReader(styleFile));
 			reader.mark(100);
-			
+		
 			do
 			{
 				style = loadNextStyle(reader, true);
@@ -49,8 +51,7 @@ public class Main
 		catch (IOException e)
 		{
 			e.printStackTrace();
-		}
-		
+		}	
 		System.exit(0);
 	}
 
@@ -81,38 +82,52 @@ public class Main
 		content.trim();	
 		style.identifier = content.substring(0, findCharacter(content, '"'));
 		content = content.replaceFirst(style.identifier + ";", "");
-		style.identifier.replaceFirst(String.valueOf(")+ String.valueOf("), "indent").replaceAll(String.valueOf('"'), "");
+		style.identifier = style.identifier.replaceFirst(String.valueOf('"') + String.valueOf('"'), "indent").replaceAll(String.valueOf('"'), "");
 		
 		while(!content.equals(""))
 		{
 			//Anderes auslesen
-			String temp = content.substring(0, findCharacter(content, ';'));
-			content = content.replaceFirst(temp, "");
+			String temp = content.substring(0, findCharacter(content, ';')).replaceAll(";", "");
+			content = content.replaceFirst(temp + ";", "");
 			
 			switch (temp.substring(0, findCharacter(temp, '=')))
 			{
 				case "style":
-				//TODO	
+					style.style = temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim();
+					temp = "";
 					break;
 				case "size":
-				//TODO
+					style.size = Short.parseShort(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
+					temp = "";
 					break;
-				case "type":
-				//TODO
+				case "format":
+				//sollte fürs erste passen, format datentyp wird vllt noch geändert
+					style.format = Short.parseShort(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
+					temp = "";
 					break;
 				case "underlinded":
-				//TODO
+					style.underlined = Boolean.parseBoolean(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
+					temp = "";
 					break;
 				case "cursive":
-				//TODO
+					style.cursive = Boolean.parseBoolean(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
+					temp = "";
 					break;
 				case "lineDistance":
-				//TODO
+					style.lineDistance = Float.parseFloat(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
+					temp = "";
 					break;
 				case "color":
-				//TODO
+				//TODO kp ob das so funktioniert oder ich n fettes switch case dafür brauch
+					style.color = Color.getColor(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim(), Color.BLACK);
+					temp = "";
 					break;
-				default: System.out.println("Error loading style property in line: " + lineNumber);				
+				case "bold":
+					style.bold = Boolean.parseBoolean(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
+					break;
+				default: 
+					System.out.println("Error loading style property in line: " + lineNumber);
+					break;
 			}	
 		}
 		
@@ -123,8 +138,7 @@ public class Main
 		else
 		{
 			reader.reset();
-		}
-		
+		}		
 		reader.mark(100);
 		return style;
 	}

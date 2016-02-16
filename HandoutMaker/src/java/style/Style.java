@@ -12,6 +12,8 @@ public class Style
 	public float lineDistance;
 	public Color color; //Kein Plan wie dat mit Farben ablï¿½uft, fï¿½rs erste mal die Java-Version benutzt 
 	
+	//FÜG DIE SCHEISSE AUCH IN DEN CONSTRUCOTR EIN DU UNTERMENSCH ES STEHT DOCH EXTRA DA!!!!!!!!!!!!!!!!!!!!!!!!!
+	
 	public Style() //kb 5000 constructors zu erstellen wo man alles einzeln setzen kann, eher einfach setzen und einen MAIN constructor
 	{
 		size = 12;	//ab hier so standardeinstellungen
@@ -21,9 +23,10 @@ public class Style
 		format = 0;
 		lineDistance = 1.0F;
 		color = Color.BLACK;
+		bold = false;
 	}
 	
-	public Style(String identifier, short size, short format, String style, boolean cursive, boolean underlined, float lineDistance, Color color)
+	public Style(String identifier, short size, short format, String style, boolean cursive, boolean underlined, float lineDistance, Color color, boolean bold)
 	{
 		this.identifier = identifier;
 		this.size = size;
@@ -33,5 +36,6 @@ public class Style
 		this.format = format;
 		this.lineDistance = lineDistance;
 		this.color = color;
+		this.bold = bold;
 	}
 }
