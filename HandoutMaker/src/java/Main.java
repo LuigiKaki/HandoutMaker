@@ -45,6 +45,7 @@ public class Main
 						styles.put(style.identifier, style);
 					}
 					while(!style.equals(loadNextStyle(reader, false)));
+					reader.close();
 					break;
 				case "indent":
 					//TODO HAU MA DEINE SCHEISSE HIER REIN
