@@ -6,10 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.style.Style;
+import java.util.HashMap;
 
 public class Main 
 {
 	private static short lineNumber = 0;
+	public static HashMap<String, Style> styles = new HashMap<String, Style>();
 	
 	public static void main(String[] args)
 	{
@@ -36,7 +38,7 @@ public class Main
 			do
 			{
 				style = loadNextStyle(reader, true);
-				applyStyle(targetFile, style);
+				styles.put(style.identifier, style);
 			}
 			while(!style.equals(loadNextStyle(reader, false)));
 		} 

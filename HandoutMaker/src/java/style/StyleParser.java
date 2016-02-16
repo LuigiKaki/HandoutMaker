@@ -7,9 +7,9 @@ import java.util.HashMap;
 
 public class StyleParser
 {
-	HashMap<String, Style> styles;
+	//hab dir ma deine HashMap abgerippt, is jz in Main, schreib da rein
 	File src;
-	 public StyleParser(File f)throws Exception
+	public StyleParser(File f)throws Exception
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(f));
 		String parsingchar = "  ";
