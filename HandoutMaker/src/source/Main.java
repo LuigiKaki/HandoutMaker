@@ -1,4 +1,4 @@
-package java;
+package source;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -6,8 +6,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.style.Style;
 import java.util.HashMap;
+
+import source.style.Style;
 
 public class Main 
 {
@@ -16,7 +17,6 @@ public class Main
 	
 	public static void main(String[] args)
 	{	//Dateinamen explizit angeben
-		System.out.println(new File("./").listFiles());
 		File styleFile = new File("./resources/styleNormal.txt");
 		File targetFile = new File("./resources/text.txt");
 		//File styleFile = new File(args[0]);

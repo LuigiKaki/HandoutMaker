@@ -1,4 +1,4 @@
-package java.style;
+package source.style;
 
 import java.awt.Color;
 
@@ -12,7 +12,7 @@ public class Style
 	public float lineDistance;
 	public Color color; //Kein Plan wie dat mit Farben ablï¿½uft, fï¿½rs erste mal die Java-Version benutzt 
 	
-	//FÜG DIE SCHEISSE AUCH IN DEN CONSTRUCOTR EIN DU UNTERMENSCH ES STEHT DOCH EXTRA DA!!!!!!!!!!!!!!!!!!!!!!!!!
+	//Fï¿½G DIE SCHEISSE AUCH IN DEN CONSTRUCOTR EIN DU UNTERMENSCH ES STEHT DOCH EXTRA DA!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	public Style() //kb 5000 constructors zu erstellen wo man alles einzeln setzen kann, eher einfach setzen und einen MAIN constructor
 	{
