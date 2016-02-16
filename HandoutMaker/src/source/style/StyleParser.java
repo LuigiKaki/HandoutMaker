@@ -16,6 +16,8 @@ public class StyleParser
 		for(String s = reader.readLine(); s != null; reader.readLine()){
 			if(s.indexOf(parsingchar) == -1){
 				
+				
+				reader.close();
 			}
 		}
 	}
