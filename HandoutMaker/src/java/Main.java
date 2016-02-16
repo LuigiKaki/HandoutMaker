@@ -15,9 +15,12 @@ public class Main
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
 	
 	public static void main(String[] args)
-	{
-		File styleFile = new File(args[0]);
-		File targetFile = new File(args[1]);
+	{	//Dateinamen explizit angeben
+		System.out.println(new File("./").listFiles());
+		File styleFile = new File("./resources/styleNormal.txt");
+		File targetFile = new File("./resources/text.txt");
+		//File styleFile = new File(args[0]);
+		//File targetFile = new File(args[1]);
 		
 		if(!styleFile.exists())
 		{
@@ -112,7 +115,7 @@ public class Main
 					temp = "";
 					break;
 				case "format":
-				//sollte fürs erste passen, format datentyp wird vllt noch geändert
+				//sollte fï¿½rs erste passen, format datentyp wird vllt noch geï¿½ndert
 					style.format = Short.parseShort(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim());
 					temp = "";
 					break;
@@ -129,7 +132,7 @@ public class Main
 					temp = "";
 					break;
 				case "color":
-				//TODO kp ob das so funktioniert oder ich n fettes switch case dafür brauch
+				//TODO kp ob das so funktioniert oder ich n fettes switch case dafï¿½r brauch
 					style.color = Color.getColor(temp.substring(findCharacter(temp, '=') + 1, temp.length()).trim(), Color.BLACK);
 					temp = "";
 					break;
