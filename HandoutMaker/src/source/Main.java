@@ -16,24 +16,24 @@ public class Main
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
 	
 	public static void main(String[] args)
-	{	//Dateinamen explizit angeben
-		File styleFile = new File("./resources/styleNormal.txt");
-		File targetFile = new File("./resources/text.txt");
-		//File styleFile = new File(args[0]);
-		//File targetFile = new File(args[1]);
-		
-		if(!styleFile.exists())
-		{
-			System.out.println("Style sheet could not be found. Make sure the path and spelling are correct!");
-			System.exit(0); 
-		}
-		if(!targetFile.exists())
-		{
-			System.out.println("Target could not be found. Make sure the path and spelling are correct!");
-			System.exit(0); 
-		}
+	{	
 		try 
 		{
+			File styleFile = new File("./resources/styleNormal.txt");
+			File targetFile = new File("./resources/text.txt");
+			//File styleFile = new File(args[0]);
+			//File targetFile = new File(args[1]);
+			
+			if(!styleFile.exists())
+			{
+				System.out.println("Style sheet could not be found. Make sure the path and spelling are correct!");
+				System.exit(0); 
+			}
+			if(!targetFile.exists())
+			{
+				System.out.println("Target could not be found. Make sure the path and spelling are correct!");
+				System.exit(0); 
+			}
 			styleFile = StyleParser.formatFile(styleFile);
 			StyleParser.loadStyles(styleFile);
 		} 
