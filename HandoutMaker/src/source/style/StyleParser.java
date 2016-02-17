@@ -13,7 +13,7 @@ import source.Main;
 public class StyleParser
 {
 	// ---Testing---
-	public static ArrayList<String> formatFile(File f) throws IOException, FileNotFoundException
+	public static String[] formatFile(File f) throws IOException, FileNotFoundException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(f));
 		ArrayList<String> parsedLines = new ArrayList<String>();
@@ -41,7 +41,7 @@ public class StyleParser
 		String[] parsedLinesAsArray = new String[parsedLines.size()];
 		for (int counter = 0; counter < parsedLinesAsArray.length; counter++)
 			parsedLinesAsArray[counter] = parsedLines.get(counter);
-		return parsedLines;
+		return parsedLinesAsArray;
 	}
 
 	public static void loadStyles(String[] s) 
