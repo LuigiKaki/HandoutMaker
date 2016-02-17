@@ -34,8 +34,7 @@ public class Main
 				System.out.println("Target could not be found. Make sure the path and spelling are correct!");
 				System.exit(0); 
 			}
-			styleFile = StyleParser.formatFile(styleFile);
-			StyleParser.loadStyles(styleFile);
+			StyleParser.loadStyles(StyleParser.formatFile(styleFile));
 		} 
 		catch (Exception e)
 		{	
