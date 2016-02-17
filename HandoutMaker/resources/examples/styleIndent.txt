@@ -1,7 +1,7 @@
-mystyle
-  bold = true
-  cursive = false
-  underline = true
-yourstyle
-  format = 0
-  color = green  
+"$mystyle";
+  bold = true;
+  cursive = false;
+  underline = true;
+"$yourstyle";
+  format = 0;
+  color = green;  
