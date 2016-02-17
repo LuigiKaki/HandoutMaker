@@ -17,8 +17,8 @@ public class Main
 	
 	public static void main(String[] args)
 	{	//Dateinamen explizit angeben
-		File styleFile = new File("./resources/styleNormal.txt");
-		File targetFile = new File("./resources/text.txt");
+		File styleFile = new File("./resources/examples/styleNormal.txt");
+		File targetFile = new File("./resources/examples/text.txt");
 		//File styleFile = new File(args[0]);
 		//File targetFile = new File(args[1]);
 		
@@ -58,14 +58,10 @@ public class Main
 					break;
 			}
 		} 
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{	
 			e.printStackTrace();
 		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}	
 		System.exit(0);
 	}
 
