@@ -68,32 +68,25 @@ public class StyleParser
 						style.style = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim();
 						break;
 					case "size":
-						style.size = Short.parseShort(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.size = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "format": // erst mal okay
-						style.format = Short.parseShort(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.format = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "underlinded":
-						style.underlined = Boolean.parseBoolean(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.underlined = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "cursive":
-						style.cursive = Boolean.parseBoolean(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.cursive = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "lineDistance":
-						style.lineDistance = Float.parseFloat(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.lineDistance = Float.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "color": // soll wohl erst mal gehen
-						style.color = Color.getColor(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()), Color.BLACK);
+						style.color = Color.getColor(content[i].substring(content[i].indexOf("=") + 1, content[i].length()), Color.BLACK);
 						break;
 					case "bold":
-						style.bold = Boolean.parseBoolean(
-								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.bold = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					default:
 						System.out.println("Error loading style property in line: " + i);
