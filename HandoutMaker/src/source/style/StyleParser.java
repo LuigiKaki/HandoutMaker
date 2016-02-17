@@ -39,53 +39,64 @@ public class StyleParser
 		return parsedLines;
 	}
 
-	public static void loadStyles(String[] content) 
+	public static void loadStyles(String[] s) 
 	{
-		Style style = new Style();
-		style.identifier = content[0].replaceAll(String.valueOf('"'), "").trim();
-
-		for (int i = 1; i < content.length; i++)
+		for(String data : s)
 		{
-			content[i] = content[i].trim();
-
-			switch (content[i].substring(0, content[i].indexOf("=")))
+			Style style = new Style();
+			String[] content = data.trim().split(";");
+			style.identifier = content[0].replaceAll(String.valueOf('"'), "").trim();
+			
+			if(style.identifier.equals(""))
 			{
-				case "style":
-					style.style = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim();
-					break;
-				case "size":
-					style.size = Short
-							.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
-					break;
-				case "format": // erst mal okay
-					style.format = Short
-							.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
-					break;
-				case "underlinded":
-					style.underlined = Boolean.parseBoolean(
-							content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
-					break;
-				case "cursive":
-					style.cursive = Boolean.parseBoolean(
-							content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
-					break;
-				case "lineDistance":
-					style.lineDistance = Float
-							.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
-					break;
-				case "color": // soll wohl erst mal gehen
-					style.color = Color.getColor(content[i].substring(content[i].indexOf("=") + 1, content[i].length()),
-							Color.BLACK);
-					break;
-				case "bold":
-					style.bold = Boolean.parseBoolean(
-							content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
-					break;
-				default:
-					System.out.println("Error loading style property in line: " + i);
-					break;
+				System.out.println("Error loading style identifier!");
+				continue;
 			}
+			
+			for (int i = 1; i < content.length; i++)
+			{
+				content[i] = content[i].trim();
+
+				switch (content[i].substring(0, content[i].indexOf("=")))
+				{
+					case "style":
+						style.style = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim();
+						break;
+					case "size":
+						style.size = Short
+								.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					case "format": // erst mal okay
+						style.format = Short
+								.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					case "underlinded":
+						style.underlined = Boolean.parseBoolean(
+								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					case "cursive":
+						style.cursive = Boolean.parseBoolean(
+								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					case "lineDistance":
+						style.lineDistance = Float
+								.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					case "color": // soll wohl erst mal gehen
+						style.color = Color.getColor(content[i].substring(content[i].indexOf("=") + 1, content[i].length()),
+								Color.BLACK);
+						break;
+					case "bold":
+						style.bold = Boolean.parseBoolean(
+								content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					default:
+						System.out.println("Error loading style property in line: " + i);
+						break;
+				}
+			}
+			Main.styles.put(style.identifier, style);
+			System.out.println("Style added!");
 		}
-		Main.styles.put(style.identifier, style);
 	}
 }
