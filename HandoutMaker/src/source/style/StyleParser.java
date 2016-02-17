@@ -30,7 +30,7 @@ public class StyleParser
 				// geparsed bis der String zu Ende ist, damit Leerzeichen etc.
 				// im String erhalten bleiben.
 				if (chr == '"')
-					inString = inString ? false : true;
+					inString = !inString;
 				// Wenn man sich nicht in einem String befindet wird geparsed
 				if (!inString && chr != '\n' && chr != ' ')
 					result = result + chr;
