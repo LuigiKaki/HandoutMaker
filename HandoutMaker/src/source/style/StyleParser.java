@@ -39,30 +39,17 @@ public class StyleParser
 		return parsedLines;
 	}
 
-	public static void loadStyles(File f) throws IOException, FileNotFoundException
+	public static void loadStyles(String[] content) 
 	{
-		BufferedReader reader = new BufferedReader(new FileReader(f));
+		Style style = new Style();
+		style.identifier = content[0].replaceAll(String.valueOf('"'), "").trim();
 
-		for (String data = reader.readLine().trim(); !data.equals(""); data = reader.readLine().trim())
+		for (int i = 1; i < content.length; i++)
 		{
-			String[] content = data.split(";");
+			content[i] = content[i].trim();
 
-			if (!(content[0].startsWith(String.valueOf('"')) && content[0].endsWith(String.valueOf('"')))
-					|| content[0].replaceAll(String.valueOf('"'), "").trim().equals(""))
+			switch (content[i].substring(0, content[i].indexOf("=")))
 			{
-				System.out.println("Error loading style identifier!");
-				continue;
-			}
-
-			Style style = new Style();
-			style.identifier = content[0].replaceAll(String.valueOf('"'), "").trim();
-
-			for (int i = 1; i < content.length; i++)
-			{
-				content[i] = content[i].trim();
-
-				switch (content[i].substring(0, content[i].indexOf("=")))
-				{
 				case "style":
 					style.style = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim();
 					break;
@@ -97,10 +84,8 @@ public class StyleParser
 				default:
 					System.out.println("Error loading style property in line: " + i);
 					break;
-				}
 			}
-			Main.styles.put(style.identifier, style);
 		}
-		reader.close();
+		Main.styles.put(style.identifier, style);
 	}
 }
