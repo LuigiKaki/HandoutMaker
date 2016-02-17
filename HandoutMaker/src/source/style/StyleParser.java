@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.text.AbstractDocument.LeafElement;
+
 import source.Main;
 
 public class StyleParser
@@ -28,7 +31,8 @@ public class StyleParser
 				// Wenn hier ein String anfängt/endet wird (nicht) weiter
 				// geparsed bis der String zu Ende ist, damit Leerzeichen etc.
 				// im String erhalten bleiben.
-				if (chr == '"')	inString = inString ? false : true;
+				if (chr == '"')
+					inString = inString ? false : true;
 				// Wenn man sich nicht in einem String befindet wird geparsed
 				if (!inString && chr != '\n' && chr != ' ')
 					result = result + chr;
@@ -36,6 +40,9 @@ public class StyleParser
 			parsedLines.add(result);
 		}
 		reader.close();
+		String[] parsedLinesAsArray = new String[parsedLines.size()];
+		for (int counter = 0; counter < parsedLinesAsArray.length; counter++)
+			parsedLinesAsArray[counter] = parsedLines.get(counter);
 		return parsedLines;
 	}
 
