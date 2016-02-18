@@ -15,30 +15,38 @@ public class StyleParser
 	// ---Testing---
 	public static String[] formatFile(File f) throws IOException, FileNotFoundException
 	{
-		BufferedReader reader = new BufferedReader(new FileReader(f));
+		BufferedReader reader = new BufferedReader(new FileReader("./style.txt"));
 		ArrayList<String> parsedLines = new ArrayList<String>();
 		boolean inString = false;
 		// Zeilen einlesen
-		for (String str = reader.readLine(); str != null; str = reader.readLine())
-		{
-			String result = "";
-			// Zeichen durchgehen
-			for (int index = 0; index < str.length(); index++)
-			{
-				char chr = str.charAt(index);
-				// Wenn hier ein String anfängt/endet wird (nicht) weiter
-				// geparsed bis der String zu Ende ist, damit Leerzeichen etc.
-				// im String erhalten bleiben.
-				if (chr == '"') inString = !inString;
-				// Wenn man sich nicht in einem String befindet wird geparsed
-				if (!inString && chr != '\n' && chr != ' ') result = result + chr;
+		for (String str = reader.readLine(); str != null; str = reader.readLine()) {
+			String[] sublines = str.trim().split(";");
+			//Diese schleife geht noch mal alle ;-Zeilen in einer echten zeile durch
+			for (String x : sublines) {
+				String result = "";
+				// Zeichen durchgehen
+				for (int index = 0; index < x.length(); index++) {
+					char chr = x.charAt(index);
+					// Wenn hier ein String anfängt/endet wird (nicht) weiter
+					// geparsed bis der String zu Ende ist, damit Leerzeichen
+					// etc.
+					// im String erhalten bleiben.
+					if (chr == '"')
+						inString = !inString;
+					// Wenn man sich nicht in einem String befindet wird
+					// geparsed
+					if (!inString && chr != '\n' && chr != ' ')
+						result = result + chr;
+					else if (inString) {
+						result = result + chr;
+					}
+				}
+				parsedLines.add(result);
 			}
-			parsedLines.add(result);
 		}
 		reader.close();
 		String[] parsedLinesAsArray = new String[parsedLines.size()];
-		for (int counter = 0; counter < parsedLinesAsArray.length; counter++)
-		{
+		for (int counter = 0; counter < parsedLinesAsArray.length; counter++) {
 			parsedLinesAsArray[counter] = parsedLines.get(counter);
 		}
 		return parsedLinesAsArray;
