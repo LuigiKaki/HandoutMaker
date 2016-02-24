@@ -84,7 +84,7 @@ public class Main
 			public void actionPerformed(ActionEvent e)
 			{
 				JFileChooser chooser = new JFileChooser();
-				chooser.setFileFilter(new FileNameExtensionFilter("Text", ".txt"));
+				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
 				chooser.setDialogTitle("Please select a style file");
 				chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
 				
@@ -115,7 +115,7 @@ public class Main
 					styleFile = chooser.getSelectedFile();
 					try
 					{
-						StyleParser.loadStyles(StyleParser.formatFile(styleFile));
+						StyleParser.loadStyles(styleFile);
 					}
 					catch (IOException e1)
 					{

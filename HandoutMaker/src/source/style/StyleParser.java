@@ -12,54 +12,15 @@ import source.Main;
 
 public class StyleParser
 {
-	// ---Testing---
-	//unnötig wenn wir automatisch generieren
-	public static String[] formatFile(File f) throws IOException, FileNotFoundException
+	public static void loadStyles(File f) throws IOException, FileNotFoundException
 	{
-		BufferedReader reader = new BufferedReader(new FileReader("./style.txt"));
-		ArrayList<String> parsedLines = new ArrayList<String>();
-		boolean inString = false;
-		// Zeilen einlesen
-		for (String str = reader.readLine(); str != null; str = reader.readLine())
+		//TODO krass verbuggte scheiße
+		BufferedReader reader = new BufferedReader(new FileReader(f));
+		
+		for (String data = reader.readLine(); !data.trim().equals(""); data = reader.readLine())
 		{
-			String[] sublines = str.trim().split(";");
-			//Diese schleife geht noch mal alle ;-Zeilen in einer echten zeile durch
-			for (String x : sublines)
-			{
-				String result = "";
-				// Zeichen durchgehen
-				for (int index = 0; index < x.length(); index++)
-				{
-					char chr = x.charAt(index);
-					// Wenn hier ein String anfÃ¤ngt/endet wird (nicht) weiter
-					// geparsed bis der String zu Ende ist, damit Leerzeichen
-					// etc.
-					// im String erhalten bleiben.
-					if (chr == '"') inString = !inString;
-					// Wenn man sich nicht in einem String befindet wird
-					// geparsed
-					if (!inString && chr != '\n' && chr != ' ') result = result + chr;
-					else if (inString)
-					{
-						result = result + chr;
-					}
-				}
-				parsedLines.add(result);
-			}
-		}
-		reader.close();
-		String[] parsedLinesAsArray = new String[parsedLines.size()];
-		for (int counter = 0; counter < parsedLinesAsArray.length; counter++)
-		{
-			parsedLinesAsArray[counter] = parsedLines.get(counter);
-		}
-		return parsedLinesAsArray;
-	}
-
-	public static void loadStyles(String[] s)
-	{
-		for (String data : s)
-		{
+			System.out.println(data);
+			
 			Style style = new Style();
 			String[] content = data.trim().split(";");
 			style.identifier = content[0].replaceAll(String.valueOf('"'), "").trim();
@@ -69,6 +30,8 @@ public class StyleParser
 				System.out.println("Error loading style identifier!");
 				continue;
 			}
+			
+			System.out.println(style.identifier);
 
 			for (int i = 1; i < content.length; i++)
 			{
@@ -108,5 +71,6 @@ public class StyleParser
 			Main.styles.put(style.identifier, style);
 			System.out.println("Style added!");
 		}
+		reader.close();
 	}
 }
