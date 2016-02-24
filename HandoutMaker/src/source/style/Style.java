@@ -1,6 +1,7 @@
 package source.style;
 
 import java.awt.Color;
+import java.awt.Font;
 
 public class Style
 {
@@ -36,5 +37,10 @@ public class Style
 		this.lineDistance = lineDistance;
 		this.color = color;
 		this.bold = bold;
+	}
+	
+	public Font getFont()
+	{
+		return Font.decode(style + "-" + (bold ? cursive ? "bolditalic" : "bold" : cursive ? "italic" : "plain") + "-" + Integer.toString(size));
 	}
 }
