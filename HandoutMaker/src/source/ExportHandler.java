@@ -24,25 +24,38 @@ public class ExportHandler
 	{
 		TextDocument doc = TextDocument.newTextDocument();
 		//Kommentare herausfiltern
+		ArrayList<Integer> linesToDelete = new ArrayList<>();
+		for (int i = 0; i < text.size(); i++)
 		{
-			ArrayList<Integer> linesToDelete = new ArrayList<>();
-			for (int i = 0; i < text.size(); i++)
-				if (text.get(i).trim().startsWith("#"))
-					linesToDelete.add(i);
-			for (int i = linesToDelete.size() - 1; i >= 0; i--)
-				linesToDelete.remove(i);
+			if (text.get(i).trim().startsWith("#"))
+			{
+				linesToDelete.add(i);
+			}
 		}
+
+		for (int i = linesToDelete.size() - 1; i >= 0; i--)
+		{
+			linesToDelete.remove(i);
+		}
+
 		//Zeile für Zeile Parser
-		for(int i = 0; i < text.size(); i++)
+		for (int i = 0; i < text.size(); i++)
 		{
 			String line = text.get(i);
-			if(line .trim().startsWith("$")) execCmd(line);
-			else doc.addParagraph(line);
+			if (line.trim().startsWith("$"))
+			{
+				execCmd(line);
+			}
+			else
+			{
+				doc.addParagraph(line);
+			}
 		}
-		
-		
+
 	}
-	private void execCmd(String line){
-		
+
+	private void execCmd(String line)
+	{
+
 	}
 }
