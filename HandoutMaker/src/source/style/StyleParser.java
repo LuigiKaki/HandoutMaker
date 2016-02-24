@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Scanner;
 
 import source.Main;
 
@@ -14,11 +14,13 @@ public class StyleParser
 {
 	public static void loadStyles(File f) throws IOException, FileNotFoundException
 	{
-		//TODO krass verbuggte scheiße
-		BufferedReader reader = new BufferedReader(new FileReader(f));
+		//TODO krass verbuggte scheiße / parser komplett neu schreiben für automatische erstellung durch programm
+		Scanner scanner = new Scanner(f);
 		
-		for (String data = reader.readLine(); !data.trim().equals(""); data = reader.readLine())
+		while(scanner.hasNextLine())
 		{
+			String data = scanner.nextLine();
+			
 			System.out.println(data);
 			
 			Style style = new Style();
@@ -71,6 +73,6 @@ public class StyleParser
 			Main.styles.put(style.identifier, style);
 			System.out.println("Style added!");
 		}
-		reader.close();
+		scanner.close();
 	}
 }

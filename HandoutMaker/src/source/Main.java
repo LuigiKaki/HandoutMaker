@@ -7,8 +7,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -16,11 +16,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import source.style.Style;
-import source.style.StyleParser;
 
 public class Main
 {
@@ -112,14 +110,12 @@ public class Main
 				
 				if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 				{
-					styleFile = chooser.getSelectedFile();
-					try
+					targetFile = chooser.getSelectedFile();
+					Iterator<Style> it = styles.values().iterator();
+					
+					while(it.hasNext())
 					{
-						StyleParser.loadStyles(styleFile);
-					}
-					catch (IOException e1)
-					{
-						e1.printStackTrace();
+						it.next().applyTo(targetFile);
 					}
 				}			
 			}

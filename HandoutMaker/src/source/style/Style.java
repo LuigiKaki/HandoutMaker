@@ -2,6 +2,7 @@ package source.style;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 
 public class Style
 {
@@ -42,5 +43,10 @@ public class Style
 	public Font getFont()
 	{
 		return Font.decode(style + "-" + (bold ? cursive ? "bolditalic" : "bold" : cursive ? "italic" : "plain") + "-" + Integer.toString(size));
+	}
+	
+	public void applyTo(File f)
+	{
+		//TODO handling vom file schreiben
 	}
 }
