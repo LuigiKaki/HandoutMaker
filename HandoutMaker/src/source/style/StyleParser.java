@@ -13,6 +13,7 @@ import source.Main;
 public class StyleParser
 {
 	// ---Testing---
+	//unnötig wenn wir automatisch generieren
 	public static String[] formatFile(File f) throws IOException, FileNotFoundException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader("./style.txt"));
