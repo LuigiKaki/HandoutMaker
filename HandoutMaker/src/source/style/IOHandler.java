@@ -1,30 +1,51 @@
 package source.style;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import source.Main;
 
-public class StyleParser
+public class IOHandler
 {
+	public static void saveStyles(File f) throws IOException
+	{
+		if(Main.styles.isEmpty())
+		{
+			Main.styles.put("lel", new Style());
+			System.out.println("Added debug Style");
+		}
+		
+		if(!Main.styles.isEmpty())
+		{
+			FileWriter writer = new FileWriter(f);
+			Iterator<Style> it = Main.styles.values().iterator();
+			while(it.hasNext())
+			{
+				Style style = it.next();
+				writer.write(style.toString() + System.getProperty("line.separator"));
+				System.out.println("Wrote style " + style.identifier + " to file " + f.getName());
+			}
+			writer.close();
+		}
+		else
+		{
+			System.out.println("No styles are loaded.");
+		}
+	}
+	
 	public static void loadStyles(File f) throws IOException, FileNotFoundException
 	{
-		//TODO krass verbuggte scheiße / parser komplett neu schreiben für automatische erstellung durch programm
 		Scanner scanner = new Scanner(f);
 		
 		while(scanner.hasNextLine())
-		{
-			String data = scanner.nextLine();
-			
-			System.out.println(data);
-			
+		{		
 			Style style = new Style();
-			String[] content = data.trim().split(";");
+			String[] content = scanner.nextLine().trim().split(";");
 			style.identifier = content[0].replaceAll(String.valueOf('"'), "").trim();
 
 			if (style.identifier.equals(""))
@@ -50,7 +71,7 @@ public class StyleParser
 					case "format": // erst mal okay
 						style.format = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
-					case "underlinded":
+					case "underlined":
 						style.underlined = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "cursive":
@@ -60,18 +81,20 @@ public class StyleParser
 						style.lineDistance = Float.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "color": // soll wohl erst mal gehen
-						style.color = Color.getColor(content[i].substring(content[i].indexOf("=") + 1, content[i].length()), Color.BLACK);
+						String[] values = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).replaceAll("[", "")
+										  .replaceAll("]", "").replaceAll("r=", "").replaceAll("g=", "").replaceAll("b=", "").split(",");
+						style.color = new Color(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
 						break;
 					case "bold":
 						style.bold = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					default:
-						System.out.println("Error loading style property in line: " + i);
+						System.out.println("Error loading style element number " + i);
 						break;
 				}
 			}
 			Main.styles.put(style.identifier, style);
-			System.out.println("Style added!");
+			System.out.println("Style " + style.identifier + " added!");
 		}
 		scanner.close();
 	}

@@ -1,1 +1,1 @@
-"$T";style=arial;lineDistance=1.5;format=1;size=15;underline=true;
+"$T";style=arial;lineDistance=1.5;format=1;size=15;underlined=true

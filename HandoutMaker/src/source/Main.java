@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -18,6 +19,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import source.style.IOHandler;
 import source.style.Style;
 
 public class Main
@@ -89,6 +91,17 @@ public class Main
 				if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 				{
 					styleFile = chooser.getSelectedFile();
+					
+					try
+					{
+						IOHandler.loadStyles(styleFile);
+					}
+					catch (IOException e1)
+					{
+						e1.printStackTrace();
+					} 
+					
+					System.out.println("Loaded style file " + styleFile.getName());
 				}			
 			}
 		});
@@ -140,6 +153,20 @@ public class Main
 		panel.add(btnEditStyle);
 
 		JButton btnSaveChanges = new JButton("Save changes");
+		btnSaveChanges.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					IOHandler.saveStyles(styleFile);
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+		});
 		panel.add(btnSaveChanges);
 	}
 }
