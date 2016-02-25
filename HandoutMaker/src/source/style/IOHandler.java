@@ -8,18 +8,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import source.Main;
 
 public class IOHandler
 {
 	public static void saveStyles(File f) throws IOException
 	{
-		if(Main.styles.isEmpty())
-		{
-			Main.styles.put("lel", new Style());
-			System.out.println("Added debug Style");
-		}
-		
 		if(!Main.styles.isEmpty())
 		{
 			FileWriter writer = new FileWriter(f);
@@ -31,10 +27,17 @@ public class IOHandler
 				System.out.println("Wrote style " + style.identifier + " to file " + f.getName());
 			}
 			writer.close();
+			
+			JOptionPane pane = new JOptionPane();
+			pane.showMessageDialog(null, "Successfully saved the style file " + f.getName(), "Success", JOptionPane.INFORMATION_MESSAGE);
+			pane.setVisible(true);
 		}
 		else
 		{
 			System.out.println("No styles are loaded.");
+			JOptionPane pane = new JOptionPane();
+			pane.showMessageDialog(null, "No styles are loaded!", "Error", JOptionPane.ERROR_MESSAGE);
+			pane.setVisible(true);
 		}
 	}
 	
