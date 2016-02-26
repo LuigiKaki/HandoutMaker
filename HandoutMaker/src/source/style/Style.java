@@ -8,7 +8,7 @@ public class Style
 {
 	// f�g Variablen hinzu, wenn dir welche einfallen, hab bestimmt net alle, hau die dann auch unten in den constructor
 	public String identifier, style;
-	public float format; //format: 0 = rechts, 1 = mitte, 2 = links, 3 = block
+	public short format; //format: 0 = rechts, 1 = mitte, 2 = links, 3 = block
 	public boolean cursive, underlined, bold;
 	public float lineDistance, size;
 	public Color color; // Kein Plan wie dat mit Farben abl�uft, f�rs erste mal die Java-Version benutzt

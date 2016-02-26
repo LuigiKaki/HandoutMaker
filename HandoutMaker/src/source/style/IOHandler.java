@@ -16,28 +16,35 @@ public class IOHandler
 {
 	public static void saveStyles(File f) throws IOException
 	{
-		if(!Main.styles.isEmpty())
+		if(f == null)
 		{
-			FileWriter writer = new FileWriter(f);
-			Iterator<Style> it = Main.styles.values().iterator();
-			while(it.hasNext())
-			{
-				Style style = it.next();
-				writer.write(style.toString() + System.getProperty("line.separator"));
-				System.out.println("Wrote style " + style.identifier + " to file " + f.getName());
-			}
-			writer.close();
-			
-			JOptionPane pane = new JOptionPane();
-			pane.showMessageDialog(null, "Successfully saved the style file " + f.getName(), "Success", JOptionPane.INFORMATION_MESSAGE);
-			pane.setVisible(true);
+			Main.showNoStyleFileLoadedDialogue();
 		}
 		else
 		{
-			System.out.println("No styles are loaded.");
-			JOptionPane pane = new JOptionPane();
-			pane.showMessageDialog(null, "No styles are loaded!", "Error", JOptionPane.ERROR_MESSAGE);
-			pane.setVisible(true);
+			if(!Main.styles.isEmpty())
+			{
+				FileWriter writer = new FileWriter(f);
+				Iterator<Style> it = Main.styles.values().iterator();
+				while(it.hasNext())
+				{
+					Style style = it.next();
+					writer.write(style.toString() + System.getProperty("line.separator"));
+					System.out.println("Wrote style " + style.identifier + " to file " + f.getName());
+				}
+				writer.close();
+				
+				JOptionPane pane = new JOptionPane();
+				pane.showMessageDialog(null, "Successfully saved the style file " + f.getName(), "Success", JOptionPane.INFORMATION_MESSAGE);
+				pane.setVisible(true);
+			}
+			else
+			{
+				System.err.println("No styles are loaded");
+				JOptionPane pane = new JOptionPane();
+				pane.showMessageDialog(null, "No styles are loaded!", "Error: No styles loaded", JOptionPane.ERROR_MESSAGE);
+				pane.setVisible(true);
+			}
 		}
 	}
 	
@@ -69,7 +76,7 @@ public class IOHandler
 						style.style = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim();
 						break;
 					case "size":
-						style.size = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						style.size = Float.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "format": // erst mal okay
 						style.format = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
@@ -83,9 +90,9 @@ public class IOHandler
 					case "lineDistance":
 						style.lineDistance = Float.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
-					case "color": // soll wohl erst mal gehen
-						String[] values = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).replaceAll("[", "")
-										  .replaceAll("]", "").replaceAll("r=", "").replaceAll("g=", "").replaceAll("b=", "").split(",");
+					case "color": 
+						String[] values = content[i].substring(content[i].indexOf("=") + 1, content[i].length()).replace("[", "")
+										  .replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split(",");
 						style.color = new Color(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
 						break;
 					case "bold":
