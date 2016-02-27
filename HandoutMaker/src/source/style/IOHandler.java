@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
+import javax.swing.JComboBox;
 
 import source.Main;
 import source.PopoutMessenger;
@@ -44,7 +44,7 @@ public class IOHandler
 		}
 	}
 	
-	public static void loadStyles(File f) throws IOException, FileNotFoundException
+	public static void loadStyles(File f, JComboBox removeList) throws IOException, FileNotFoundException
 	{
 		Scanner scanner = new Scanner(f);
 		
@@ -98,7 +98,8 @@ public class IOHandler
 				}
 			}
 			Main.styles.put(style.identifier, style);
-			System.out.println("Style " + style.identifier + " hinzugefügt!");
+			removeList.addItem(style.identifier);
+			System.out.println("Style " + style.identifier + " hinzugefügt");
 		}
 		scanner.close();
 		PopoutMessenger.showStyleFileLoadedDialogue(f.getName());

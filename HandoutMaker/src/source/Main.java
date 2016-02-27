@@ -31,6 +31,10 @@ import source.style.IOHandler;
 import source.style.Style;
 import javax.swing.JFormattedTextField;
 import java.awt.GridLayout;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Main
 {
@@ -39,6 +43,7 @@ public class Main
 	private JFrame frmHandoutMaker;
 	private JTextField identifierField;
 	private JTextField colorField;
+	protected JComboBox removeTargetBox;
 
 	/**
 	 * Launch the application.
@@ -98,6 +103,7 @@ public class Main
 				if (!styles.isEmpty())
 				{
 					styles.clear();
+					removeTargetBox.removeAllItems();
 					System.out.println("Styles zurückgesetzt");
 				}
 				JFileChooser chooser = new JFileChooser();
@@ -111,7 +117,7 @@ public class Main
 
 					try
 					{
-						IOHandler.loadStyles(styleFile);
+						IOHandler.loadStyles(styleFile, removeTargetBox);
 					}
 					catch (IOException e1)
 					{
@@ -194,9 +200,9 @@ public class Main
 		addStylePanel.add(typeBox);
 
 		final JComboBox sizeBox = new JComboBox();
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, sizeBox, 16, SpringLayout.EAST, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, sizeBox, 0, SpringLayout.NORTH, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, sizeBox, 0, SpringLayout.EAST, label_1);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, sizeBox, 6, SpringLayout.SOUTH, label_1);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, sizeBox, 0, SpringLayout.WEST, label_1);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, sizeBox, -10, SpringLayout.EAST, label_1);
 		sizeBox.setModel(new DefaultComboBoxModel(new String[] { "11", "12", "13", "14", "15", "16", "17", "18" }));
 		sizeBox.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sizeBox.setEditable(true);
@@ -262,11 +268,9 @@ public class Main
 				else
 				{
 					String[] colorValues = colorField.getText().split(",");
-					styles.put(identifierField.getText(),
-							new Style(identifierField.getText(), String.valueOf(typeBox.getSelectedItem()), Short.parseShort(String.valueOf(formatBox.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")),
-									cursiveBox.isSelected(), underlinedBox.isSelected(), boldBox.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox.getSelectedItem()).replace(',', '.')),
-									new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
-					PopoutMessenger.showStyleAddedDialogue(identifierField.getText());
+					styles.put(identifierField.getText(), new Style(identifierField.getText(), String.valueOf(typeBox.getSelectedItem()), Short.parseShort(String.valueOf(formatBox.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")),	cursiveBox.isSelected(), underlinedBox.isSelected(), boldBox.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox.getSelectedItem()).replace(',', '.')), new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
+					removeTargetBox.addItem(identifierField.getText());
+					PopoutMessenger.showStyleAddedDialogue(identifierField.getText());		
 				}
 			}
 		});
@@ -296,6 +300,23 @@ public class Main
 		addStylePanel.add(lblNewLabel);
 
 		colorField = new JTextField();
+		colorField.addKeyListener(new KeyAdapter() 
+		{
+			@Override
+			public void keyTyped(KeyEvent e) 
+			{
+					String s = "";
+					for(int i = 0; i < colorField.getText().length(); i++)
+					{
+						char c = colorField.getText().charAt(i);
+						if(Character.isDigit(c) || c == ',' || c == '.')
+						{
+							s += c;
+						}				
+					}
+					colorField.setText(s);
+			}
+		});
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, colorField, 1, SpringLayout.NORTH, btnHinzufgen);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, colorField, 0, SpringLayout.WEST, lblNewLabel);
 		sl_addStylePanel.putConstraint(SpringLayout.EAST, colorField, -22, SpringLayout.EAST, lblHervorhebung);
@@ -332,26 +353,44 @@ public class Main
 		sl_removeStylePanel.putConstraint(SpringLayout.EAST, lblWhleDenZu, -128, SpringLayout.EAST, removeStylePanel);
 		removeStylePanel.add(lblWhleDenZu);
 		
-		JComboBox comboBox = new JComboBox();
-		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, comboBox, 6, SpringLayout.SOUTH, lblWhleDenZu);
-		sl_removeStylePanel.putConstraint(SpringLayout.WEST, comboBox, 0, SpringLayout.WEST, lblWhleDenZu);
-		removeStylePanel.add(comboBox);
+		removeTargetBox = new JComboBox();
+		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, removeTargetBox, 1, SpringLayout.SOUTH, lblWhleDenZu);
+		sl_removeStylePanel.putConstraint(SpringLayout.WEST, removeTargetBox, 105, SpringLayout.WEST, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, removeTargetBox, -154, SpringLayout.SOUTH, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.EAST, removeTargetBox, -90, SpringLayout.EAST, removeStylePanel);
+		removeStylePanel.add(removeTargetBox);
 		
-		JButton btnNewButton_1 = new JButton("Momentane Styles laden");
-		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, comboBox, -6, SpringLayout.NORTH, btnNewButton_1);
-		sl_removeStylePanel.putConstraint(SpringLayout.EAST, comboBox, 0, SpringLayout.EAST, btnNewButton_1);
-		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, btnNewButton_1, 62, SpringLayout.NORTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, btnNewButton_1, -103, SpringLayout.SOUTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.WEST, btnNewButton_1, 0, SpringLayout.WEST, lblWhleDenZu);
-		removeStylePanel.add(btnNewButton_1);
-		
-		JButton btnNewButton_2 = new JButton("Ausgew\u00E4hlten Style entfernen");
-		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, btnNewButton_2, 7, SpringLayout.SOUTH, btnNewButton_1);
-		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, btnNewButton_2, -56, SpringLayout.SOUTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.EAST, btnNewButton_1, 0, SpringLayout.EAST, btnNewButton_2);
-		sl_removeStylePanel.putConstraint(SpringLayout.WEST, btnNewButton_2, 0, SpringLayout.WEST, lblWhleDenZu);
-		sl_removeStylePanel.putConstraint(SpringLayout.EAST, btnNewButton_2, -90, SpringLayout.EAST, removeStylePanel);
-		removeStylePanel.add(btnNewButton_2);
+		JButton removeStyleButton = new JButton("Ausgew\u00E4hlten Style entfernen");
+		removeStyleButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				if(styleFile == null)
+				{
+					PopoutMessenger.showNoStyleFileDialogue();
+				}
+				else if(styles.isEmpty())
+				{
+					PopoutMessenger.showNoStylesDialogue();
+				}
+				else
+				{
+					styles.remove(String.valueOf(removeTargetBox.getSelectedItem()));
+					PopoutMessenger.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
+					removeTargetBox.removeAllItems();
+					Iterator<String> it = styles.keySet().iterator();
+					while(it.hasNext())
+					{
+						removeTargetBox.addItem(it.next());
+					}
+				}
+			}
+		});
+		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, removeStyleButton, 6, SpringLayout.SOUTH, removeTargetBox);
+		sl_removeStylePanel.putConstraint(SpringLayout.WEST, removeStyleButton, 0, SpringLayout.WEST, lblWhleDenZu);
+		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, removeStyleButton, -113, SpringLayout.SOUTH, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.EAST, removeStyleButton, -90, SpringLayout.EAST, removeStylePanel);
+		removeStylePanel.add(removeStyleButton);
 
 		JButton btnNewButton = new JButton("Speichern");
 		btnNewButton.addActionListener(new ActionListener()
@@ -369,5 +408,6 @@ public class Main
 			}
 		});
 		tabbedPane_1.addTab("Speichern", null, btnNewButton, null);
+		frmHandoutMaker.setResizable(false);
 	}
 }

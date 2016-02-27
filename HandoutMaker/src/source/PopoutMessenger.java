@@ -47,4 +47,9 @@ public class PopoutMessenger
 	{
 		showDialogue("Style-Identifier " + id + " wurde ein Style zugewiesen", "Der Style mit dem Identifer " + id + " wurde erfolreich hinzugefügt.", "Hinzufügen erfolgreich");
 	}
+
+	public static void showStyleRemovedDialogue(String id)
+	{
+		showDialogue("Style mit dem Identifier " + id + " wurde entfernt", "Der Style mit dem Identifer " + id + " wurde erfolgreich entfernt.","Entfernen erfolgreich");
+	}
 }
