@@ -339,7 +339,7 @@ public class Main
 		addStylePanel.add(btnFarbauswahl);
 
 		JPanel editStylePanel = new JPanel();
-		tabbedPane_1.addTab("Styles bearbeiten", null, editStylePanel, null);
+		tabbedPane_1.addTab("Style bearbeiten", null, editStylePanel, null);
 
 		JPanel removeStylePanel = new JPanel();
 		tabbedPane_1.addTab("Style entfernen", null, removeStylePanel, null);
