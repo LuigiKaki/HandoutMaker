@@ -28,17 +28,18 @@ public class Style
 		color = Color.BLACK;
 	}
 
-	public Style(String identifier, short size, short format, String style, boolean cursive, boolean underlined, float lineDistance, Color color, boolean bold)
+	public Style(String identifier, String style, short format, boolean cursive, boolean underlined, boolean bold, float lineDistance, float size, Color color)
 	{
 		this.identifier = identifier;
-		this.size = size;
 		this.style = style;
+		this.format = format;
 		this.cursive = cursive;
 		this.underlined = underlined;
-		this.format = format;
-		this.lineDistance = lineDistance;
-		this.color = color;
 		this.bold = bold;
+		this.lineDistance = lineDistance;
+		this.size = size;
+		this.color = color;
+		
 	}
 	
 	public Font getFont()

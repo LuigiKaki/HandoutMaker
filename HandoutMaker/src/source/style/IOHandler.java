@@ -11,6 +11,7 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 import source.Main;
+import source.PopoutMessenger;
 
 public class IOHandler
 {
@@ -18,7 +19,8 @@ public class IOHandler
 	{
 		if(f == null)
 		{
-			Main.showNoStyleFileLoadedDialogue();
+			PopoutMessenger.showNoStyleFileDialogue();
+
 		}
 		else
 		{
@@ -30,20 +32,14 @@ public class IOHandler
 				{
 					Style style = it.next();
 					writer.write(style.toString() + System.getProperty("line.separator"));
-					System.out.println("Wrote style " + style.identifier + " to file " + f.getName());
+					System.out.println("Style " + style.identifier + " in Style-File " + f.getName() + " geschrieben");
 				}
 				writer.close();
-				
-				JOptionPane pane = new JOptionPane();
-				pane.showMessageDialog(null, "Successfully saved the style file " + f.getName(), "Success", JOptionPane.INFORMATION_MESSAGE);
-				pane.setVisible(true);
+				PopoutMessenger.showSavedStyleFileDialogue(f.getName());
 			}
 			else
 			{
-				System.err.println("No styles are loaded");
-				JOptionPane pane = new JOptionPane();
-				pane.showMessageDialog(null, "No styles are loaded!", "Error: No styles loaded", JOptionPane.ERROR_MESSAGE);
-				pane.setVisible(true);
+				PopoutMessenger.showNoStylesDialogue();
 			}
 		}
 	}
@@ -60,11 +56,9 @@ public class IOHandler
 
 			if (style.identifier.equals(""))
 			{
-				System.out.println("Error loading style identifier!");
+				System.err.println("Error: Fehler beim Laden des Style-Identifiers");
 				continue;
 			}
-			
-			System.out.println(style.identifier);
 
 			for (int i = 1; i < content.length; i++)
 			{
@@ -99,13 +93,14 @@ public class IOHandler
 						style.bold = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					default:
-						System.out.println("Error loading style element number " + i);
+						System.err.println("Error: Fehler beim Laden des Styleelements an der Stelle " + i);
 						break;
 				}
 			}
 			Main.styles.put(style.identifier, style);
-			System.out.println("Style " + style.identifier + " added!");
+			System.out.println("Style " + style.identifier + " hinzugefügt!");
 		}
 		scanner.close();
+		PopoutMessenger.showStyleFileLoadedDialogue(f.getName());
 	}
 }
