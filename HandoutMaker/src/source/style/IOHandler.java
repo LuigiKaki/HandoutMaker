@@ -44,7 +44,7 @@ public class IOHandler
 		}
 	}
 	
-	public static void loadStyles(File f, JComboBox removeList) throws IOException, FileNotFoundException
+	public static void loadStyles(File f, JComboBox removeList, JComboBox editList) throws IOException, FileNotFoundException
 	{
 		Scanner scanner = new Scanner(f);
 		
@@ -99,6 +99,7 @@ public class IOHandler
 			}
 			Main.styles.put(style.identifier, style);
 			removeList.addItem(style.identifier);
+			editList.addItem(style.identifier);
 			System.out.println("Style " + style.identifier + " hinzugefügt");
 		}
 		scanner.close();

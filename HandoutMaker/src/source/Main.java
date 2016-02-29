@@ -6,8 +6,11 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -23,18 +26,14 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import source.style.IOHandler;
 import source.style.Style;
-import javax.swing.JFormattedTextField;
-import java.awt.GridLayout;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class Main
 {
@@ -43,7 +42,9 @@ public class Main
 	private JFrame frmHandoutMaker;
 	private JTextField identifierField;
 	private JTextField colorField;
-	protected JComboBox removeTargetBox;
+	private JComboBox removeTargetBox;
+	private JTextField colorField_1;
+	private JComboBox editTargetBox;
 
 	/**
 	 * Launch the application.
@@ -104,6 +105,7 @@ public class Main
 				{
 					styles.clear();
 					removeTargetBox.removeAllItems();
+					editTargetBox.removeAllItems();
 					System.out.println("Styles zurückgesetzt");
 				}
 				JFileChooser chooser = new JFileChooser();
@@ -117,7 +119,7 @@ public class Main
 
 					try
 					{
-						IOHandler.loadStyles(styleFile, removeTargetBox);
+						IOHandler.loadStyles(styleFile, removeTargetBox, editTargetBox);
 					}
 					catch (IOException e1)
 					{
@@ -137,7 +139,7 @@ public class Main
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				if(styleFile == null)
+				if (styleFile == null)
 				{
 					PopoutMessenger.showNoStyleFileDialogue();
 				}
@@ -267,10 +269,21 @@ public class Main
 				}
 				else
 				{
-					String[] colorValues = colorField.getText().split(",");
-					styles.put(identifierField.getText(), new Style(identifierField.getText(), String.valueOf(typeBox.getSelectedItem()), Short.parseShort(String.valueOf(formatBox.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")),	cursiveBox.isSelected(), underlinedBox.isSelected(), boldBox.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox.getSelectedItem()).replace(',', '.')), new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
-					removeTargetBox.addItem(identifierField.getText());
-					PopoutMessenger.showStyleAddedDialogue(identifierField.getText());		
+					try
+					{
+						String[] colorValues = colorField.getText().split(",");
+						styles.put(identifierField.getText(),
+								new Style(identifierField.getText(), String.valueOf(typeBox.getSelectedItem()), Short.parseShort(String.valueOf(formatBox.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")),
+										cursiveBox.isSelected(), underlinedBox.isSelected(), boldBox.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox.getSelectedItem()).replace(',', '.')),
+										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
+						removeTargetBox.addItem(identifierField.getText());
+						editTargetBox.addItem(identifierField.getText());
+						PopoutMessenger.showStyleAddedDialogue(identifierField.getText());
+					}
+					catch (NumberFormatException e1)
+					{
+						PopoutMessenger.showNumberFormatDialogue();
+					}
 				}
 			}
 		});
@@ -300,21 +313,27 @@ public class Main
 		addStylePanel.add(lblNewLabel);
 
 		colorField = new JTextField();
-		colorField.addKeyListener(new KeyAdapter() 
+		colorField.addKeyListener(new KeyAdapter()
 		{
 			@Override
-			public void keyTyped(KeyEvent e) 
+			public void keyReleased(KeyEvent e)
 			{
-					String s = "";
-					for(int i = 0; i < colorField.getText().length(); i++)
+				if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_KP_LEFT || e.getKeyCode() == KeyEvent.VK_KP_RIGHT || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_KP_UP || e.getKeyCode() == KeyEvent.VK_DOWN
+						|| e.getKeyCode() == KeyEvent.VK_KP_DOWN || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+				{
+					return;
+				}
+
+				String s = "";
+				for (int i = 0; i < colorField.getText().length(); i++)
+				{
+					char c = colorField.getText().charAt(i);
+					if (Character.isDigit(c) || c == ',')
 					{
-						char c = colorField.getText().charAt(i);
-						if(Character.isDigit(c) || c == ',' || c == '.')
-						{
-							s += c;
-						}				
+						s += c;
 					}
-					colorField.setText(s);
+				}
+				colorField.setText(s);
 			}
 		});
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, colorField, 1, SpringLayout.NORTH, btnHinzufgen);
@@ -333,64 +352,13 @@ public class Main
 			{
 				JColorChooser colorChooser = new JColorChooser();
 				Color color = colorChooser.showDialog(null, "Wähle eine Schriftfarbe", Color.BLACK);
-				colorField.setText(color.getRed() + "," + color.getGreen() + "," + color.getBlue());
+				if (color != null)
+				{
+					colorField.setText(color.getRed() + "," + color.getGreen() + "," + color.getBlue());
+				}
 			}
 		});
 		addStylePanel.add(btnFarbauswahl);
-
-		JPanel editStylePanel = new JPanel();
-		tabbedPane_1.addTab("Style bearbeiten", null, editStylePanel, null);
-
-		JPanel removeStylePanel = new JPanel();
-		tabbedPane_1.addTab("Style entfernen", null, removeStylePanel, null);
-		SpringLayout sl_removeStylePanel = new SpringLayout();
-		removeStylePanel.setLayout(sl_removeStylePanel);
-		
-		JLabel lblWhleDenZu = new JLabel("W\u00E4hle den zu entfernenden Style");
-		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, lblWhleDenZu, 0, SpringLayout.NORTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.WEST, lblWhleDenZu, 105, SpringLayout.WEST, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, lblWhleDenZu, -180, SpringLayout.SOUTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.EAST, lblWhleDenZu, -128, SpringLayout.EAST, removeStylePanel);
-		removeStylePanel.add(lblWhleDenZu);
-		
-		removeTargetBox = new JComboBox();
-		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, removeTargetBox, 1, SpringLayout.SOUTH, lblWhleDenZu);
-		sl_removeStylePanel.putConstraint(SpringLayout.WEST, removeTargetBox, 105, SpringLayout.WEST, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, removeTargetBox, -154, SpringLayout.SOUTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.EAST, removeTargetBox, -90, SpringLayout.EAST, removeStylePanel);
-		removeStylePanel.add(removeTargetBox);
-		
-		JButton removeStyleButton = new JButton("Ausgew\u00E4hlten Style entfernen");
-		removeStyleButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				if(styleFile == null)
-				{
-					PopoutMessenger.showNoStyleFileDialogue();
-				}
-				else if(styles.isEmpty())
-				{
-					PopoutMessenger.showNoStylesDialogue();
-				}
-				else
-				{
-					styles.remove(String.valueOf(removeTargetBox.getSelectedItem()));
-					PopoutMessenger.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
-					removeTargetBox.removeAllItems();
-					Iterator<String> it = styles.keySet().iterator();
-					while(it.hasNext())
-					{
-						removeTargetBox.addItem(it.next());
-					}
-				}
-			}
-		});
-		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, removeStyleButton, 6, SpringLayout.SOUTH, removeTargetBox);
-		sl_removeStylePanel.putConstraint(SpringLayout.WEST, removeStyleButton, 0, SpringLayout.WEST, lblWhleDenZu);
-		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, removeStyleButton, -113, SpringLayout.SOUTH, removeStylePanel);
-		sl_removeStylePanel.putConstraint(SpringLayout.EAST, removeStyleButton, -90, SpringLayout.EAST, removeStylePanel);
-		removeStylePanel.add(removeStyleButton);
 
 		JButton btnNewButton = new JButton("Speichern");
 		btnNewButton.addActionListener(new ActionListener()
@@ -407,6 +375,202 @@ public class Main
 				}
 			}
 		});
+
+		JPanel editStylePanel = new JPanel();
+		tabbedPane_1.addTab("Style bearbeiten", null, editStylePanel, null);
+		editStylePanel.setLayout(null);
+
+		JLabel label_3 = new JLabel("Schriftart");
+		label_3.setBounds(10, 66, 45, 14);
+		label_3.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		editStylePanel.add(label_3);
+
+		JLabel label_4 = new JLabel("Schriftgr\u00F6\u00DFe");
+		label_4.setBounds(134, 66, 80, 14);
+		editStylePanel.add(label_4);
+
+		final JComboBox typeBox_1 = new JComboBox();
+		typeBox_1.setModel(new DefaultComboBoxModel(new String[] { "Times New Roman", "Arial", "Calibri" }));
+		typeBox_1.setBounds(10, 91, 112, 20);
+		typeBox_1.setToolTipText("");
+		typeBox_1.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		editStylePanel.add(typeBox_1);
+
+		final JComboBox sizeBox_1 = new JComboBox();
+		sizeBox_1.setModel(new DefaultComboBoxModel(new String[] { "11", "12", "13", "14", "15", "16", "17", "18" }));
+		sizeBox_1.setBounds(134, 91, 59, 20);
+		sizeBox_1.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		sizeBox_1.setEditable(true);
+		editStylePanel.add(sizeBox_1);
+
+		final JCheckBox underlinedBox_1 = new JCheckBox("Unterstrichen");
+		underlinedBox_1.setBounds(134, 136, 116, 23);
+		editStylePanel.add(underlinedBox_1);
+
+		final JCheckBox boldBox_1 = new JCheckBox("Fett");
+		boldBox_1.setBounds(134, 162, 59, 23);
+		editStylePanel.add(boldBox_1);
+
+		final JCheckBox cursiveBox_1 = new JCheckBox("Kursiv");
+		cursiveBox_1.setBounds(195, 162, 69, 23);
+		editStylePanel.add(cursiveBox_1);
+
+		final JComboBox formatBox_1 = new JComboBox();
+		formatBox_1.setModel(new DefaultComboBoxModel(new String[] { "Linksb\u00FCndig", "Zentriert", "Rechtsb\u00FCndig", "Blocksatz" }));
+		formatBox_1.setBounds(208, 91, 106, 20);
+		formatBox_1.setMaximumRowCount(4);
+		editStylePanel.add(formatBox_1);
+
+		JLabel label_5 = new JLabel("Ausrichtung");
+		label_5.setBounds(208, 66, 69, 14);
+		editStylePanel.add(label_5);
+
+		JLabel label_6 = new JLabel("Hervorhebungen");
+		label_6.setBounds(134, 122, 116, 14);
+		editStylePanel.add(label_6);
+
+		final JComboBox linedistanceBox_1 = new JComboBox();
+		linedistanceBox_1.setBounds(328, 91, 60, 20);
+		linedistanceBox_1.setModel(new DefaultComboBoxModel(new String[] { "0", "1", "1.5", "2" }));
+		linedistanceBox_1.setSelectedIndex(1);
+		linedistanceBox_1.setMaximumRowCount(4);
+		linedistanceBox_1.setEditable(true);
+		editStylePanel.add(linedistanceBox_1);
+
+		JButton btnnderungenbernehmen = new JButton("\u00C4ndern");
+		btnnderungenbernehmen.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (styleFile == null)
+				{
+					PopoutMessenger.showNoStyleFileDialogue();
+				}
+				else if (editTargetBox.getSelectedItem() != null && styles.containsKey(String.valueOf(editTargetBox.getSelectedItem())))
+				{
+					try
+					{
+						String[] colorValues = colorField_1.getText().split(",");
+						styles.put(String.valueOf(editTargetBox.getSelectedItem()),
+								new Style(String.valueOf(editTargetBox.getSelectedItem()), String.valueOf(typeBox_1.getSelectedItem()),
+										Short.parseShort(String.valueOf(formatBox_1.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")), cursiveBox_1.isSelected(), underlinedBox_1.isSelected(),
+										boldBox_1.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox_1.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox_1.getSelectedItem()).replace(',', '.')),
+										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
+						PopoutMessenger.showStyleEditedDialogue(identifierField.getText());
+					}
+					catch (NumberFormatException e1)
+					{
+						PopoutMessenger.showNumberFormatDialogue();
+					}
+				}
+			}
+		});
+		btnnderungenbernehmen.setBounds(296, 162, 112, 23);
+		editStylePanel.add(btnnderungenbernehmen);
+
+		JLabel label_7 = new JLabel("Zeilenabstand");
+		label_7.setBounds(328, 66, 80, 14);
+		editStylePanel.add(label_7);
+
+		JLabel label_9 = new JLabel("Schriftfarbe");
+		label_9.setBounds(10, 122, 93, 14);
+		editStylePanel.add(label_9);
+
+		colorField_1 = new JTextField();
+		colorField_1.setBounds(10, 139, 112, 20);
+		colorField_1.setText("0,0,0");
+		colorField_1.setColumns(10);
+		editStylePanel.add(colorField_1);
+
+		JButton button_1 = new JButton("Farbauswahl");
+		button_1.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				JColorChooser colorChooser = new JColorChooser();
+				Color color = colorChooser.showDialog(null, "Wähle eine Schriftfarbe", Color.BLACK);
+				colorField_1.setText(color.getRed() + "," + color.getGreen() + "," + color.getBlue());
+			}
+		});
+		button_1.setBounds(10, 164, 112, 23);
+		editStylePanel.add(button_1);
+
+		editTargetBox = new JComboBox();
+		editTargetBox.addItemListener(new ItemListener()
+		{
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (editTargetBox.getSelectedItem() != null && styles.containsKey(String.valueOf(editTargetBox.getSelectedItem())))
+				{
+					Style s = styles.get(String.valueOf(editTargetBox.getSelectedItem()));
+					typeBox_1.setSelectedItem(s.style);
+					sizeBox_1.setSelectedItem(s.size);
+					formatBox_1.setSelectedIndex(s.format);
+					linedistanceBox_1.setSelectedItem(s.lineDistance);
+					colorField_1.setText(s.color.getRed() + "," + s.color.getGreen() + "," + s.color.getBlue());
+					underlinedBox_1.setSelected(s.underlined);
+					boldBox_1.setSelected(s.bold);
+					cursiveBox_1.setSelected(s.cursive);
+				}
+			}
+		});
+		editTargetBox.setBounds(177, 27, 91, 20);
+		editStylePanel.add(editTargetBox);
+
+		JLabel lblStyleauswahl = new JLabel("Styleauswahl");
+		lblStyleauswahl.setBounds(177, 11, 81, 14);
+		editStylePanel.add(lblStyleauswahl);
+
+		JPanel removeStylePanel = new JPanel();
+		tabbedPane_1.addTab("Style entfernen", null, removeStylePanel, null);
+		SpringLayout sl_removeStylePanel = new SpringLayout();
+		removeStylePanel.setLayout(sl_removeStylePanel);
+
+		JLabel lblWhleDenZu = new JLabel("W\u00E4hle den zu entfernenden Style");
+		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, lblWhleDenZu, 0, SpringLayout.NORTH, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.WEST, lblWhleDenZu, 105, SpringLayout.WEST, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, lblWhleDenZu, -180, SpringLayout.SOUTH, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.EAST, lblWhleDenZu, -128, SpringLayout.EAST, removeStylePanel);
+		removeStylePanel.add(lblWhleDenZu);
+
+		removeTargetBox = new JComboBox();
+		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, removeTargetBox, 1, SpringLayout.SOUTH, lblWhleDenZu);
+		sl_removeStylePanel.putConstraint(SpringLayout.WEST, removeTargetBox, 105, SpringLayout.WEST, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, removeTargetBox, -154, SpringLayout.SOUTH, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.EAST, removeTargetBox, -90, SpringLayout.EAST, removeStylePanel);
+		removeStylePanel.add(removeTargetBox);
+
+		JButton removeStyleButton = new JButton("Ausgew\u00E4hlten Style entfernen");
+		removeStyleButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (styleFile == null)
+				{
+					PopoutMessenger.showNoStyleFileDialogue();
+				}
+				else if (styles.isEmpty())
+				{
+					PopoutMessenger.showNoStylesDialogue();
+				}
+				else
+				{
+					styles.remove(String.valueOf(removeTargetBox.getSelectedItem()));
+					PopoutMessenger.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
+					removeTargetBox.removeAllItems();
+					Iterator<String> it = styles.keySet().iterator();
+					while (it.hasNext())
+					{
+						removeTargetBox.addItem(it.next());
+					}
+				}
+			}
+		});
+		sl_removeStylePanel.putConstraint(SpringLayout.NORTH, removeStyleButton, 6, SpringLayout.SOUTH, removeTargetBox);
+		sl_removeStylePanel.putConstraint(SpringLayout.WEST, removeStyleButton, 0, SpringLayout.WEST, lblWhleDenZu);
+		sl_removeStylePanel.putConstraint(SpringLayout.SOUTH, removeStyleButton, -113, SpringLayout.SOUTH, removeStylePanel);
+		sl_removeStylePanel.putConstraint(SpringLayout.EAST, removeStyleButton, -90, SpringLayout.EAST, removeStylePanel);
+		removeStylePanel.add(removeStyleButton);
 		tabbedPane_1.addTab("Speichern", null, btnNewButton, null);
 		frmHandoutMaker.setResizable(false);
 	}

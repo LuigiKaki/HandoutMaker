@@ -52,4 +52,14 @@ public class PopoutMessenger
 	{
 		showDialogue("Style mit dem Identifier " + id + " wurde entfernt", "Der Style mit dem Identifer " + id + " wurde erfolgreich entfernt.","Entfernen erfolgreich");
 	}
+
+	public static void showNumberFormatDialogue()
+	{
+		showErrorDialogue("Fehler beim Lesen der Zahlenfelder", "Fehler beim Laden der Zahlenfelder. Überprüfe diese!", "Error: Falsche Zahleneingabe");
+	}
+
+	public static void showStyleEditedDialogue(String id)
+	{
+		showDialogue("Style mit dem Identifier " + id + " wurde bearbeitet", "Der Style mit dem Identifer " + id + " wurde erfolgreich bearbeitet.","Bearbeiten erfolgreich");
+	}
 }

@@ -37,7 +37,7 @@ public class ExportHandler
 	OdfOfficeAutomaticStyles contentAutoStyles;
 	OdfOfficeStyles stylesOfficestyles;
 	ArrayList<String> loadedStyles;
-	
+
 	public ExportHandler() throws Exception
 	{
 		doc = TextDocument.newTextDocument();
@@ -47,6 +47,7 @@ public class ExportHandler
 		stylesOfficestyles = doc.getOrCreateDocumentStyles();
 		loadedStyles = new ArrayList<>();
 	}
+
 	public void export(String filename, HashMap<String, Style> styles, ArrayList<String> text) throws Exception
 	{
 		//ODF Toolkit Init undso 
@@ -81,28 +82,37 @@ public class ExportHandler
 				if (line.trim().startsWith("$style:"))
 				{
 					String name = line.trim().split(":")[1];
-					try{
+					try
+					{
 						loadStyle(name);
 						//kommt noch
-					}catch(StyleNotFoundException e){
+					}
+					catch (StyleNotFoundException e)
+					{
 						JOptionPane.showConfirmDialog(null, "Style " + name + " not found", "Export error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
-			} else
-			{	
+			}
+			else
+			{
 				//kommt noch
 			}
 		}
 
 	}
 
-	
 	private void loadStyle(String s) throws StyleNotFoundException
 	{
 		Style style = Main.styles.get(s);
-		if(style == null) throw new StyleNotFoundException(s);
+		if (style == null)
+		{
+			throw new StyleNotFoundException(s);
+		}	
 		OdfStyle odfstyle = stylesOfficestyles.newStyle(style.identifier.substring(1), OdfStyleFamily.Paragraph);
 		odfstyle.setProperty(OdfTextProperties.FontSize, String.valueOf(style.size + "pt"));
-		if(style.bold) odfstyle.setProperty(OdfTextProperties.FontWeight, "bold"); 
+		if (style.bold)
+		{
+			odfstyle.setProperty(OdfTextProperties.FontWeight, "bold");
+		}		
 	}
 }
