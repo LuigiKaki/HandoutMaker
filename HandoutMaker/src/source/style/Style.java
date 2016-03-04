@@ -53,9 +53,4 @@ public class Style
 		return '"' + identifier + '"' + ";style=" + style + ";format=" + String.valueOf(format) + ";cursive=" + String.valueOf(cursive) + ";underlined=" + String.valueOf(underlined) + ";bold=" 
 	           + String.valueOf(bold) + ";lineDistance=" + String.valueOf(lineDistance) +  ";size=" + String.valueOf(size) + ";color=" + String.valueOf(color).replaceAll("java.awt.Color", "");
 	}
-	
-	public void applyTo(File f)
-	{
-		//TODO handling vom file schreiben
-	}
 }

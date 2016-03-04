@@ -62,4 +62,9 @@ public class PopoutMessenger
 	{
 		showDialogue("Style mit dem Identifier " + id + " wurde bearbeitet", "Der Style mit dem Identifer " + id + " wurde erfolgreich bearbeitet.","Bearbeiten erfolgreich");
 	}
+
+	public static void showTextLoadedDialogue(String filename)
+	{
+		showDialogue("Text-File " + filename + " geladen", "Die Textdatei " + filename + " wurde erfolgreich geladen.", "Laden erfolgreich");
+	}
 }
