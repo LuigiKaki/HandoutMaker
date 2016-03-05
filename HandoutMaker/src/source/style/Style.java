@@ -39,7 +39,6 @@ public class Style
 		this.lineDistance = lineDistance;
 		this.size = size;
 		this.color = color;
-		
 	}
 	
 	public Font getFont()
