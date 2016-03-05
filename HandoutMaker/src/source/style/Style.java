@@ -41,11 +41,6 @@ public class Style
 		this.color = color;
 	}
 	
-	public Font getFont()
-	{
-		return Font.decode(style + "-" + (bold ? cursive ? "bolditalic" : "bold" : cursive ? "italic" : "plain") + "-" + Float.toString(size));
-	}
-	
 	@Override
 	public String toString()
 	{
