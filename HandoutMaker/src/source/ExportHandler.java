@@ -54,7 +54,6 @@ public class ExportHandler
 		loadedStyles = new ArrayList<>();
 	}
 
-	@SuppressWarnings("unused")
 	public void export(String filename, HashMap<String, Style> styles, ArrayList<String> text) throws Exception
 	{
 		//ODF Toolkit Init undso 
