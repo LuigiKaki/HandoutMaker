@@ -7,8 +7,6 @@ import javax.swing.JOptionPane;
 
 import org.odftoolkit.odfdom.dom.OdfContentDom;
 import org.odftoolkit.odfdom.dom.OdfStylesDom;
-import org.odftoolkit.odfdom.dom.attribute.style.StyleFontStyleNameAttribute;
-import org.odftoolkit.odfdom.dom.attribute.style.StyleLineSpacingAttribute;
 import org.odftoolkit.odfdom.dom.attribute.style.StyleTextUnderlineColorAttribute;
 import org.odftoolkit.odfdom.dom.attribute.style.StyleTextUnderlineStyleAttribute;
 import org.odftoolkit.odfdom.dom.attribute.style.StyleTextUnderlineWidthAttribute;
