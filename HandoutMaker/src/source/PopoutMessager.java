@@ -2,20 +2,47 @@ package source;
 
 import javax.swing.JOptionPane;
 
-public class PopoutMessenger
+public class PopoutMessager
 {
 	//wenn du ne nachricht mit popout machen willst, erstell ne neue funktion, damit wir die alle zentral verwalten können
 	
 	private static void showDialogue(String cmdMessage, String popOutMessage, String popOutTitle)
 	{
-		System.out.println(cmdMessage);
-		JOptionPane.showMessageDialog(null, popOutMessage, popOutTitle, JOptionPane.INFORMATION_MESSAGE);
+		if(Main.allowMessages)
+		{
+			System.out.println(cmdMessage);
+		}
+		if(Main.guiMode)
+		{
+			JOptionPane.showMessageDialog(null, popOutMessage, popOutTitle, JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	
+	public static void messageCmdOnly(String s, boolean error)
+	{
+		if(Main.allowMessages)
+		{
+			if(error)
+			{
+				System.err.println(s);
+			}
+			else
+			{
+				System.out.println(s);	
+			}		
+		}
 	}
 	
 	private static void showErrorDialogue(String cmdMessage, String popOutMessage, String popOutTitle)
 	{
-		System.err.println(cmdMessage);
-		JOptionPane.showMessageDialog(null, popOutMessage, popOutTitle, JOptionPane.ERROR_MESSAGE);
+		if(Main.allowMessages)
+		{
+			System.err.println(cmdMessage);
+		}	
+		if(Main.guiMode)
+		{
+			JOptionPane.showMessageDialog(null, popOutMessage, popOutTitle, JOptionPane.ERROR_MESSAGE);		
+		}
 	}
 	
 	public static void showNoStyleFileDialogue()

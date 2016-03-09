@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -29,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -42,6 +40,8 @@ import source.style.Style;
 public class Main
 {
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
+	public static boolean guiMode = true;
+	public static boolean allowMessages = false;
 	private File styleFile, targetFile;
 	private JFrame frmHandoutMaker;
 	private JTextField identifierField;
@@ -56,21 +56,48 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		EventQueue.invokeLater(new Runnable()
+		if(args.length > 0)
 		{
-			public void run()
+			for(int i = 0; i < args.length; i+=2)
 			{
-				try
+				switch(args[i])
 				{
-					Main window = new Main();
-					window.frmHandoutMaker.setVisible(true);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
+					case "/nogui":
+						guiMode = false;
+						break;
+					case "/messages":
+						allowMessages = true;
+						break;
+					default:
+						System.err.println("Error: Unbekannte Variable: " + args[i]);
+						System.exit(1);
+						break;
 				}
 			}
-		});
+		}
+		
+		if(guiMode)
+		{
+			EventQueue.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					try
+					{
+						Main window = new Main();
+						window.frmHandoutMaker.setVisible(true);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+		else
+		{
+			
+		}
 	}
 
 	/**
@@ -87,6 +114,7 @@ public class Main
 	private void initialize()
 	{
 		frmHandoutMaker = new JFrame();
+		frmHandoutMaker.setResizable(false);
 		frmHandoutMaker.setTitle("Handout Maker");
 		frmHandoutMaker.setBounds(100, 100, 450, 300);
 		frmHandoutMaker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,7 +151,7 @@ public class Main
 						}
 						textEditing.setText(content);
 						s.close();
-						PopoutMessenger.showTextLoadedDialogue(targetFile.getName());
+						PopoutMessager.showTextLoadedDialogue(targetFile.getName());
 					}
 					catch (FileNotFoundException e1)
 					{
@@ -143,7 +171,7 @@ public class Main
 					styles.clear();
 					removeTargetBox.removeAllItems();
 					editTargetBox.removeAllItems();
-					System.out.println("Styles zurückgesetzt");
+					PopoutMessager.messageCmdOnly("Styles zurückgesetzt", false);				
 				}
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
@@ -166,9 +194,6 @@ public class Main
 			}
 		});
 		SpringLayout sl_mainPanel = new SpringLayout();
-		sl_mainPanel.putConstraint(SpringLayout.EAST, btnImportStyleFile, 200, SpringLayout.WEST, mainPanel);
-		sl_mainPanel.putConstraint(SpringLayout.WEST, btnApplyStyleTo, 0, SpringLayout.EAST, btnImportStyleFile);
-		sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnImportStyleFile, 55, SpringLayout.NORTH, mainPanel);
 		sl_mainPanel.putConstraint(SpringLayout.NORTH, btnApplyStyleTo, 0, SpringLayout.NORTH, btnImportStyleFile);
 		sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnApplyStyleTo, 0, SpringLayout.SOUTH, btnImportStyleFile);
 		sl_mainPanel.putConstraint(SpringLayout.EAST, btnApplyStyleTo, 0, SpringLayout.EAST, mainPanel);
@@ -177,6 +202,23 @@ public class Main
 		mainPanel.setLayout(sl_mainPanel);
 		mainPanel.add(btnImportStyleFile);
 		mainPanel.add(btnApplyStyleTo);
+		
+		JSeparator separator = new JSeparator();
+		separator.setVisible(false);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, btnApplyStyleTo, 0, SpringLayout.EAST, separator);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, btnImportStyleFile, 0, SpringLayout.WEST, separator);
+		sl_mainPanel.putConstraint(SpringLayout.NORTH, separator, 0, SpringLayout.NORTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, separator, 0, SpringLayout.SOUTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.HORIZONTAL_CENTER, separator, 0, SpringLayout.HORIZONTAL_CENTER, mainPanel);
+		mainPanel.add(separator);
+		
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setVisible(false);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnImportStyleFile, -60, SpringLayout.NORTH, separator_1);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, separator_1, 0, SpringLayout.WEST, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, separator_1, 0, SpringLayout.EAST, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.VERTICAL_CENTER, separator_1, 0, SpringLayout.VERTICAL_CENTER, mainPanel);
+		mainPanel.add(separator_1);
 
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Style-File", null, tabbedPane_1, null);
@@ -300,11 +342,11 @@ public class Main
 			{
 				if (styleFile == null)
 				{
-					PopoutMessenger.showNoStyleFileDialogue();
+					PopoutMessager.showNoStyleFileDialogue();
 				}
 				else if (styles.containsKey(identifierField.getText()))
 				{
-					PopoutMessenger.showStyleIdentifierOccupiedDialogue(identifierField.getText());
+					PopoutMessager.showStyleIdentifierOccupiedDialogue(identifierField.getText());
 				}
 				else
 				{
@@ -317,11 +359,11 @@ public class Main
 										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
 						removeTargetBox.addItem(identifierField.getText());
 						editTargetBox.addItem(identifierField.getText());
-						PopoutMessenger.showStyleAddedDialogue(identifierField.getText());
+						PopoutMessager.showStyleAddedDialogue(identifierField.getText());
 					}
 					catch (NumberFormatException e1)
 					{
-						PopoutMessenger.showNumberFormatDialogue();
+						PopoutMessager.showNumberFormatDialogue();
 					}
 				}
 			}
@@ -477,7 +519,7 @@ public class Main
 			{
 				if (styleFile == null)
 				{
-					PopoutMessenger.showNoStyleFileDialogue();
+					PopoutMessager.showNoStyleFileDialogue();
 				}
 				else if (editTargetBox.getSelectedItem() != null && styles.containsKey(String.valueOf(editTargetBox.getSelectedItem())))
 				{
@@ -489,11 +531,11 @@ public class Main
 										Short.parseShort(String.valueOf(formatBox_1.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")), cursiveBox_1.isSelected(), underlinedBox_1.isSelected(),
 										boldBox_1.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox_1.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox_1.getSelectedItem()).replace(',', '.')),
 										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
-						PopoutMessenger.showStyleEditedDialogue(identifierField.getText());
+						PopoutMessager.showStyleEditedDialogue(identifierField.getText());
 					}
 					catch (NumberFormatException e1)
 					{
-						PopoutMessenger.showNumberFormatDialogue();
+						PopoutMessager.showNumberFormatDialogue();
 					}
 				}
 			}
@@ -574,16 +616,16 @@ public class Main
 			{
 				if (styleFile == null)
 				{
-					PopoutMessenger.showNoStyleFileDialogue();
+					PopoutMessager.showNoStyleFileDialogue();
 				}
 				else if (styles.isEmpty())
 				{
-					PopoutMessenger.showNoStylesDialogue();
+					PopoutMessager.showNoStylesDialogue();
 				}
 				else
 				{
 					styles.remove(String.valueOf(removeTargetBox.getSelectedItem()));
-					PopoutMessenger.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
+					PopoutMessager.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
 					removeTargetBox.removeAllItems();
 					Iterator<String> it = styles.keySet().iterator();
 					while (it.hasNext())
