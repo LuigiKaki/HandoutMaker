@@ -98,8 +98,11 @@ public class IOHandler
 				}
 			}
 			Main.styles.put(style.identifier, style);
-			removeList.addItem(style.identifier);
-			editList.addItem(style.identifier);
+			if(Main.guiMode)
+			{
+				removeList.addItem(style.identifier);
+				editList.addItem(style.identifier);
+			}	
 			PopoutMessager.messageCmdOnly("Style " + style.identifier + " hinzugefügt", false);		
 		}
 		scanner.close();

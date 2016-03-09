@@ -42,6 +42,7 @@ public class Main
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
 	public static boolean guiMode = true;
 	public static boolean allowMessages = false;
+	
 	private File styleFile, targetFile;
 	private JFrame frmHandoutMaker;
 	private JTextField identifierField;
@@ -65,8 +66,13 @@ public class Main
 					case "/nogui":
 						guiMode = false;
 						break;
-					case "/messages":
+					case "/loud":
 						allowMessages = true;
+						break;
+					case "/applyStyle":
+						//TODO apply style
+						
+						i += 2;
 						break;
 					default:
 						System.err.println("Error: Unbekannte Variable: " + args[i]);
@@ -94,14 +100,11 @@ public class Main
 				}
 			});
 		}
-		else
-		{
-			
-		}
 	}
 
 	/**
 	 * Create the application.
+	 * @wbp.parser.entryPoint
 	 */
 	public Main()
 	{

@@ -10,7 +10,7 @@ public class PopoutMessager
 	{
 		if(Main.allowMessages)
 		{
-			System.out.println(cmdMessage);
+			messageCmdOnly(cmdMessage, false);
 		}
 		if(Main.guiMode)
 		{
@@ -37,7 +37,7 @@ public class PopoutMessager
 	{
 		if(Main.allowMessages)
 		{
-			System.err.println(cmdMessage);
+			messageCmdOnly(cmdMessage, true);
 		}	
 		if(Main.guiMode)
 		{
