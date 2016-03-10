@@ -1,5 +1,6 @@
 package source;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,7 +17,6 @@ import org.odftoolkit.odfdom.dom.style.props.OdfTextProperties;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeStyles;
 import org.odftoolkit.odfdom.incubator.doc.style.OdfStyle;
-import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.text.Paragraph;
@@ -43,30 +43,26 @@ public class ExportHandler
 	OdfOfficeAutomaticStyles contentAutoStyles;
 	OdfOfficeStyles stylesOfficestyles;
 	ArrayList<String> loadedStyles;
-
+	String currentStyle = null;
+	
 	public ExportHandler() throws Exception
 	{
+		//ODF Toolkit Init undso 
 		doc = TextDocument.newTextDocument();
 		contentDom = doc.getContentDom();
 		stylesDom = doc.getStylesDom();
 		contentAutoStyles = contentDom.getOrCreateAutomaticStyles();
 		stylesOfficestyles = doc.getOrCreateDocumentStyles();
 		loadedStyles = new ArrayList<>();
+
 	}
 
-	@SuppressWarnings("unused")
 	public void export(String filename, HashMap<String, Style> styles, ArrayList<String> text) throws Exception
 	{
-		//ODF Toolkit Init undso 
-		TextDocument doc = TextDocument.newTextDocument();
-		OdfContentDom contentDom = doc.getContentDom();
-		OdfStylesDom stylesDom = doc.getStylesDom();
-		OdfOfficeAutomaticStyles contentAutoStyles = contentDom.getOrCreateAutomaticStyles();
-		OdfOfficeStyles stylesOfficestyles = doc.getOrCreateDocumentStyles();
-		ArrayList<String> loadedStyles = new ArrayList<>();
-		String currentStyle = null;
+
 		//Kommentare herausfiltern
 		ArrayList<Integer> linesToDelete = new ArrayList<>();
+		boolean lineMode = false;
 		for (int i = 0; i < text.size(); i++)
 		{
 			if (text.get(i).trim().startsWith("#"))
@@ -98,17 +94,18 @@ public class ExportHandler
 					} catch (StyleNotFoundException e)
 					{
 						//TODO Popout Klasse Verwenden
-						JOptionPane.showConfirmDialog(null, "Style " + name + " not found", "Export error",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showConfirmDialog(null, "Style " + name + " not found", "Export error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
-			} else
-			{
+			} else if (lineMode){
+				
+			}
+			else{
 				Paragraph p = doc.addParagraph(text.get(i));
 				if(currentStyle != null) p.setStyleName(currentStyle);
 			}
 		}
-
+		doc.save(new File(filename));
 	}
 
 	/*
@@ -145,7 +142,40 @@ public class ExportHandler
 			odfstyle.setProperty(OdfTextProperties.FontStyle, FontStyle.ITALIC.toString());
 		}
 		//TODO Muss dynamisch gestaltet werden (Verwendung der Color-Klasse vom odftk in der Style.java Datei)
-		odfstyle.setProperty(OdfTextProperties.Color, Color.BLACK.toString());
+		odfstyle.setProperty(OdfTextProperties.Color, style.getColorAsHex());
 		odfstyle.setProperty(OdfParagraphProperties.LineSpacing, String.valueOf(style.lineDistance));
+		switch (style.format)
+		{
+			case 0: odfstyle.setProperty(OdfParagraphProperties.TextAlign, "start");
+			break;
+			case 1: odfstyle.setProperty(OdfParagraphProperties.TextAlign, "end");
+			break;
+			case 2: odfstyle.setProperty(OdfParagraphProperties.TextAlign, "center");
+			break;
+			case 3: odfstyle.setProperty(OdfParagraphProperties.TextAlign, "justify");
+		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
