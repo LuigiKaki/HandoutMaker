@@ -44,7 +44,7 @@ public class Main
 {
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
 	public static boolean guiMode = true;
-	public static boolean allowMessages = false;
+	public static boolean allowMessages = true;
 	
 	private File styleFile, targetFile;
 	private JFrame frmHandoutMaker;
@@ -325,17 +325,17 @@ public class Main
 		addStylePanel.add(underlinedBox);
 
 		final JCheckBox boldBox = new JCheckBox("Fett");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, boldBox, 0, SpringLayout.NORTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, boldBox, 20, SpringLayout.EAST, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, boldBox, 0, SpringLayout.SOUTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, boldBox, 70, SpringLayout.EAST, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, boldBox, 6, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, boldBox, 0, SpringLayout.WEST, label);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, boldBox, 21, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, boldBox, -60, SpringLayout.EAST, underlinedBox);
 		addStylePanel.add(boldBox);
 
 		final JCheckBox cursiveBox = new JCheckBox("Kursiv");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, cursiveBox, 0, SpringLayout.NORTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, cursiveBox, 10, SpringLayout.EAST, boldBox);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, cursiveBox, 0, SpringLayout.SOUTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, cursiveBox, 80, SpringLayout.EAST, boldBox);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, cursiveBox, 6, SpringLayout.SOUTH, boldBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, cursiveBox, 0, SpringLayout.WEST, label);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, cursiveBox, 42, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, cursiveBox, -359, SpringLayout.EAST, addStylePanel);
 		addStylePanel.add(cursiveBox);
 
 		final JComboBox formatBox = new JComboBox();
@@ -356,11 +356,25 @@ public class Main
 
 		JLabel lblHervorhebung = new JLabel("Hervorhebungen");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblHervorhebung, 5, SpringLayout.SOUTH, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblHervorhebung, 80, SpringLayout.WEST, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblHervorhebung, 0, SpringLayout.WEST, typeBox);
 		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblHervorhebung, 25, SpringLayout.SOUTH, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, lblHervorhebung, 180, SpringLayout.WEST, addStylePanel);
 		addStylePanel.add(lblHervorhebung);
-
+		
+		JLabel lblListStyle = new JLabel("Listen-Style");
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblListStyle, 5, SpringLayout.SOUTH, cursiveBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblListStyle, 0, SpringLayout.WEST, label);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblListStyle, 25, SpringLayout.SOUTH, cursiveBox);
+		addStylePanel.add(lblListStyle);
+		
+		final JComboBox liststyleBox = new JComboBox();
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, liststyleBox, 110, SpringLayout.WEST, label);
+		liststyleBox.setModel(new DefaultComboBoxModel(new String[] {"Numerisch: X)", "Numerisch: X.", "Stichpunkte"}));
+		liststyleBox.setSelectedIndex(2);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, liststyleBox, 0, SpringLayout.SOUTH, lblListStyle);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, liststyleBox, 0, SpringLayout.WEST, label);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, liststyleBox, 20, SpringLayout.SOUTH, lblListStyle);
+		addStylePanel.add(liststyleBox);
+		
 		final JComboBox linedistanceBox = new JComboBox();
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, linedistanceBox, 0, SpringLayout.NORTH, typeBox);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, linedistanceBox, 10, SpringLayout.EAST, formatBox);
@@ -373,7 +387,9 @@ public class Main
 		addStylePanel.add(linedistanceBox);
 
 		JButton btnHinzufgen = new JButton("Hinzuf\u00FCgen");
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, btnHinzufgen, 0, SpringLayout.NORTH, liststyleBox);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, btnHinzufgen, 0, SpringLayout.WEST, linedistanceBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, btnHinzufgen, 0, SpringLayout.SOUTH, liststyleBox);
 		sl_addStylePanel.putConstraint(SpringLayout.EAST, btnHinzufgen, 100, SpringLayout.WEST, linedistanceBox);
 		btnHinzufgen.addActionListener(new ActionListener()
 		{
@@ -395,7 +411,8 @@ public class Main
 						styles.put(identifierField.getText(),
 								new Style(identifierField.getText(), String.valueOf(typeBox.getSelectedItem()), Short.parseShort(String.valueOf(formatBox.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")),
 										cursiveBox.isSelected(), underlinedBox.isSelected(), boldBox.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox.getSelectedItem()).replace(',', '.')),
-										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
+										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2])), 
+										Short.parseShort(String.valueOf(liststyleBox.getSelectedItem()).replace("Numerisch: X)", "0").replace("Numerisch: X.", "1").replace("Stichpunkte", "2"))));
 						removeTargetBox.addItem(identifierField.getText());
 						editTargetBox.addItem(identifierField.getText());
 						PopoutMessager.showStyleAddedDialogue(identifierField.getText());
@@ -408,7 +425,21 @@ public class Main
 			}
 		});
 		addStylePanel.add(btnHinzufgen);
-
+		
+		JLabel lblId = new JLabel("Identifier");
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblId, 0, SpringLayout.NORTH, lblListStyle);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblId, 0, SpringLayout.WEST, sizeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblId, 0, SpringLayout.SOUTH, lblListStyle);
+		addStylePanel.add(lblId);
+		
+		identifierField = new JTextField();
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, identifierField, 0, SpringLayout.NORTH, liststyleBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, identifierField, 0, SpringLayout.WEST, sizeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, identifierField, 0, SpringLayout.SOUTH, liststyleBox);
+		identifierField.setText("$");
+		identifierField.setColumns(10);
+		addStylePanel.add(identifierField);	
+		
 		JLabel lblZeilenabstand = new JLabel("Zeilenabstand");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblZeilenabstand, 0, SpringLayout.NORTH, label);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblZeilenabstand, 0, SpringLayout.WEST, linedistanceBox);
@@ -416,33 +447,17 @@ public class Main
 		sl_addStylePanel.putConstraint(SpringLayout.EAST, lblZeilenabstand, 80, SpringLayout.WEST, linedistanceBox);
 		addStylePanel.add(lblZeilenabstand);
 
-		identifierField = new JTextField();
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, btnHinzufgen, 0, SpringLayout.NORTH, identifierField);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, btnHinzufgen, 0, SpringLayout.SOUTH, identifierField);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, identifierField, 0, SpringLayout.WEST, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, identifierField, 72, SpringLayout.WEST, addStylePanel);
-		identifierField.setText("$");
-		addStylePanel.add(identifierField);
-		identifierField.setColumns(10);
-
-		JLabel lblId = new JLabel("Identifier");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblId, 10, SpringLayout.SOUTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblId, 30, SpringLayout.SOUTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, identifierField, 20, SpringLayout.SOUTH, lblId);
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, identifierField, 0, SpringLayout.SOUTH, lblId);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblId, 0, SpringLayout.WEST, typeBox);
-		addStylePanel.add(lblId);
-
 		JLabel lblColor = new JLabel("Schriftfarbe");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblColor, 0, SpringLayout.NORTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblColor, 0, SpringLayout.NORTH, lblHervorhebung);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblColor, 0, SpringLayout.WEST, sizeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblColor, 0, SpringLayout.SOUTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblColor, 0, SpringLayout.SOUTH, lblHervorhebung);
 		addStylePanel.add(lblColor);
 
 		colorField = new JTextField();
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, colorField, 0, SpringLayout.NORTH, identifierField);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, colorField, 0, SpringLayout.SOUTH, identifierField);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, colorField, 110, SpringLayout.WEST, lblColor);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, colorField, 0, SpringLayout.SOUTH, lblColor);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, colorField, 0, SpringLayout.WEST, lblColor);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, colorField, 20, SpringLayout.SOUTH, lblColor);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, colorField, -75, SpringLayout.WEST, btnHinzufgen);
 		colorField.addKeyListener(new KeyAdapter()
 		{
 			@Override
@@ -466,7 +481,6 @@ public class Main
 				colorField.setText(s);
 			}
 		});
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, colorField, 0, SpringLayout.WEST, lblColor);
 		colorField.setText("0,0,0");
 		addStylePanel.add(colorField);
 		colorField.setColumns(10);
@@ -489,6 +503,8 @@ public class Main
 			}
 		});
 		addStylePanel.add(btnFarbauswahl);
+		
+
 
 		JPanel editStylePanel = new JPanel();
 		tabbedPane_1.addTab("Style bearbeiten", null, editStylePanel, null);
@@ -543,6 +559,16 @@ public class Main
 		label_6.setBounds(134, 122, 116, 14);
 		editStylePanel.add(label_6);
 
+		JLabel lblNewLabel = new JLabel("Listen-Style");
+		lblNewLabel.setBounds(296, 122, 80, 14);
+		editStylePanel.add(lblNewLabel);
+		
+		final JComboBox comboBox_1 = new JComboBox();
+		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Numerisch: X)", "Numerisch: X.", "Stichpunkte"}));
+		comboBox_1.setSelectedIndex(2);
+		comboBox_1.setBounds(296, 137, 110, 20);
+		editStylePanel.add(comboBox_1);
+		
 		final JComboBox linedistanceBox_1 = new JComboBox();
 		linedistanceBox_1.setBounds(328, 91, 60, 20);
 		linedistanceBox_1.setModel(new DefaultComboBoxModel(new String[] { "0", "1", "1.5", "2" }));
@@ -569,12 +595,14 @@ public class Main
 								new Style(String.valueOf(editTargetBox.getSelectedItem()), String.valueOf(typeBox_1.getSelectedItem()),
 										Short.parseShort(String.valueOf(formatBox_1.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")), cursiveBox_1.isSelected(), underlinedBox_1.isSelected(),
 										boldBox_1.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox_1.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox_1.getSelectedItem()).replace(',', '.')),
-										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
-						PopoutMessager.showStyleEditedDialogue(identifierField.getText());
+										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2])), 
+										Short.parseShort(String.valueOf(comboBox_1.getSelectedItem()).replace("Numerisch: X)", "0").replace("Numerisch: X.", "1").replace("Stichpunkte", "2"))));
+						PopoutMessager.showStyleEditedDialogue(String.valueOf(editTargetBox.getSelectedItem()));
 					}
 					catch (NumberFormatException e1)
 					{
 						PopoutMessager.showNumberFormatDialogue();
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -625,6 +653,7 @@ public class Main
 					underlinedBox_1.setSelected(s.underlined);
 					boldBox_1.setSelected(s.bold);
 					cursiveBox_1.setSelected(s.cursive);
+					comboBox_1.setSelectedIndex(s.listStyle);
 				}
 			}
 		});
@@ -634,6 +663,8 @@ public class Main
 		JLabel lblStyleauswahl = new JLabel("Styleauswahl");
 		lblStyleauswahl.setBounds(177, 11, 81, 14);
 		editStylePanel.add(lblStyleauswahl);
+		
+
 
 		JPanel removeStylePanel = new JPanel();
 		tabbedPane_1.addTab("Style entfernen", null, removeStylePanel, null);

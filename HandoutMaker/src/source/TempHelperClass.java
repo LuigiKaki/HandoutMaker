@@ -3,6 +3,7 @@ package source;
 import java.io.File;
 import java.util.Iterator;
 
+import org.odftoolkit.odfdom.dom.style.props.OdfParagraphProperties;
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
@@ -41,6 +42,7 @@ public class TempHelperClass
 					p.setHorizontalAlignment(style.getHorizontalAlignmentType());
 					
 					//TODO zeilenabstand	
+					p.getOdfElement().setProperty(OdfParagraphProperties.LineSpacing, "1.5in");
 					
 					changed = true;
 					break;

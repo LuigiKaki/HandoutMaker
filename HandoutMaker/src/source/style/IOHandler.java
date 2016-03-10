@@ -72,7 +72,7 @@ public class IOHandler
 					case "size":
 						style.size = Float.parseFloat(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
-					case "format": // erst mal okay
+					case "format":
 						style.format = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					case "underlined":
@@ -91,6 +91,9 @@ public class IOHandler
 						break;
 					case "bold":
 						style.bold = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
+						break;
+					case "liststyle":
+						style.listStyle = Short.parseShort(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					default:
 						PopoutMessager.messageCmdOnly("Error: Fehler beim Laden des Styleelements an der Stelle " + i, true);					
