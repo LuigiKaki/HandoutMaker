@@ -34,6 +34,9 @@ import javax.swing.JToolBar;
 import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.text.Paragraph;
+
 import source.style.IOHandler;
 import source.style.Style;
 
@@ -70,9 +73,19 @@ public class Main
 						allowMessages = true;
 						break;
 					case "/applyStyle":
-						//TODO apply style
 						
-						i += 2;
+						//TODO WIP
+						File f = new File(args[i+1]);
+						try
+						{
+							TempHelperClass.applyStyleToOdt(f);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+						
+						i++;
 						break;
 					default:
 						System.err.println("Error: Unbekannte Variable: " + args[i]);
@@ -136,14 +149,37 @@ public class Main
 			public void actionPerformed(ActionEvent e)
 			{
 				JFileChooser chooser = new JFileChooser();
-				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
+				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt", "odt"));
 				chooser.setDialogTitle("Wähle die Textdatei");
 				chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 				{
 					targetFile = chooser.getSelectedFile();
-
+					
+					if(targetFile.getName().endsWith(".odt"))
+					{
+						try
+						{
+							TempHelperClass.applyStyleToOdt(targetFile);
+						}
+						catch (Exception e1)
+						{
+							e1.printStackTrace();
+						}
+					}
+				
+					//TODO .txt handlind
+					if(targetFile.getName().endsWith(".txt"))
+					{
+						//deine funktionen einbauen
+					}
+					
+					
+					
+					
+					//Text Einlesen für Edit im Programm (Textbearbeitung ala Word)
+					//TODO vllt entfernen
 					try
 					{
 						String content = "";
