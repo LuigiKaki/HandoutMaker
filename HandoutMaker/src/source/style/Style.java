@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 
+import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
+import org.odftoolkit.simple.style.StyleTypeDefinitions.HorizontalAlignmentType;
+
 public class Style
 {
 	// f�g Variablen hinzu, wenn dir welche einfallen, hab bestimmt net alle, hau die dann auch unten in den constructor
@@ -41,18 +44,36 @@ public class Style
 		this.color = color;
 	}
 	
-	public Font getFont()
+	public FontStyle getFontStyle()
 	{
-		return Font.decode(style + "-" + (bold ? cursive ? "bolditalic" : "bold" : cursive ? "italic" : "plain") + "-" + Float.toString(size));
+		return bold ? (cursive ? FontStyle.BOLDITALIC : FontStyle.BOLD) : (cursive ? FontStyle.ITALIC : FontStyle.REGULAR);
+	}
+	
+	public HorizontalAlignmentType getHorizontalAlignmentType()
+	{
+		switch(format)
+		{
+			case 0:
+				return HorizontalAlignmentType.LEFT;
+			case 1:
+				return HorizontalAlignmentType.CENTER;
+			case 2:
+				return HorizontalAlignmentType.RIGHT;
+			case 3:
+				return HorizontalAlignmentType.FILLED;
+			default:
+				return HorizontalAlignmentType.DEFAULT;
+		}
 	}
 	
 	@Override
 	public String toString()
 	{
-		return '"' + identifier + '"' + ";style=" + style + ";format=" + String.valueOf(format) + ";cursive=" + String.valueOf(cursive) + ";underlined=" + String.valueOf(underlined) + ";bold=" 
-	           + String.valueOf(bold) + ";lineDistance=" + String.valueOf(lineDistance) +  ";size=" + String.valueOf(size) + ";color=" + String.valueOf(color).replaceAll("java.awt.Color", "");
+		return '"' + identifier + '"' + ";style=" + style + ";format=" + String.valueOf(format) + ";cursive=" + String.valueOf(cursive) + ";underlined=" + String.valueOf(underlined) + ";bold="  + String.valueOf(bold) + ";lineDistance=" + String.valueOf(lineDistance) +  ";size=" + String.valueOf(size) + ";color=" + String.valueOf(color).replaceAll("java.awt.Color", "");
 	}
 	
+	@Deprecated
+	//benutz new org.odftoolkit.odfdom.type.Color(java.awt.Color) constructor 
 	public String getColorAsHex()
 	{
 		return "#".concat(Integer.toHexString(color.getRed()) + Integer.toHexString(color.getGreen()) + Integer.toHexString(color.getBlue()));

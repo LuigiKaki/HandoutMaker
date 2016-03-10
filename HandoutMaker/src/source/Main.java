@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -29,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -36,12 +34,18 @@ import javax.swing.JToolBar;
 import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.text.Paragraph;
+
 import source.style.IOHandler;
 import source.style.Style;
 
 public class Main
 {
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
+	public static boolean guiMode = true;
+	public static boolean allowMessages = false;
+	
 	private File styleFile, targetFile;
 	private JFrame frmHandoutMaker;
 	private JTextField identifierField;
@@ -56,25 +60,64 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		EventQueue.invokeLater(new Runnable()
+		if(args.length > 0)
 		{
-			public void run()
+			for(int i = 0; i < args.length; i+=2)
 			{
-				try
+				switch(args[i])
 				{
-					Main window = new Main();
-					window.frmHandoutMaker.setVisible(true);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
+					case "/nogui":
+						guiMode = false;
+						break;
+					case "/loud":
+						allowMessages = true;
+						break;
+					case "/applyStyle":
+						
+						//TODO WIP
+						File f = new File(args[i+1]);
+						try
+						{
+							TempHelperClass.applyStyleToOdt(f);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+						
+						i++;
+						break;
+					default:
+						System.err.println("Error: Unbekannte Variable: " + args[i]);
+						System.exit(1);
+						break;
 				}
 			}
-		});
+		}
+		
+		if(guiMode)
+		{
+			EventQueue.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					try
+					{
+						Main window = new Main();
+						window.frmHandoutMaker.setVisible(true);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 	}
 
 	/**
 	 * Create the application.
+	 * @wbp.parser.entryPoint
 	 */
 	public Main()
 	{
@@ -87,6 +130,7 @@ public class Main
 	private void initialize()
 	{
 		frmHandoutMaker = new JFrame();
+		frmHandoutMaker.setResizable(false);
 		frmHandoutMaker.setTitle("Handout Maker");
 		frmHandoutMaker.setBounds(100, 100, 450, 300);
 		frmHandoutMaker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,88 +142,141 @@ public class Main
 
 		JPanel mainPanel = new JPanel();
 		tabbedPane.addTab("Main", null, mainPanel, null);
-		
-				JButton btnApplyStyleTo = new JButton("Textdatei laden");
-				btnApplyStyleTo.addActionListener(new ActionListener()
+
+		JButton btnApplyStyleTo = new JButton("Textdatei laden");
+		btnApplyStyleTo.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt", "odt"));
+				chooser.setDialogTitle("Wähle die Textdatei");
+				chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
+
+				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 				{
-					public void actionPerformed(ActionEvent e)
-					{			
-						JFileChooser chooser = new JFileChooser();
-						chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
-						chooser.setDialogTitle("Wähle die Textdatei");
-						chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
-						
-						if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+					targetFile = chooser.getSelectedFile();
+					
+					if(targetFile.getName().endsWith(".odt"))
+					{
+						try
 						{
-							targetFile = chooser.getSelectedFile();		
-							
-							try
-							{
-								String content = "";
-								Scanner s = new Scanner(targetFile);
-								while(s.hasNext())
-								{
-									content += content.equals("") ? s.nextLine() : System.getProperty("line.separator") + s.nextLine(); 
-								}
-								textEditing.setText(content);
-								s.close();
-								PopoutMessenger.showTextLoadedDialogue(targetFile.getName());
-							}
-							catch (FileNotFoundException e1)
-							{
-								e1.printStackTrace();
-							}												
+							TempHelperClass.applyStyleToOdt(targetFile);
+						}
+						catch (Exception e1)
+						{
+							e1.printStackTrace();
 						}
 					}
-				});
 				
-						JButton btnImportStyleFile = new JButton("Style-File laden");
-						btnImportStyleFile.addActionListener(new ActionListener()
+					//TODO .txt handlind
+					if(targetFile.getName().endsWith(".txt"))
+					{
+						//deine funktionen einbauen
+					}
+					
+					
+					
+					
+					//Text Einlesen für Edit im Programm (Textbearbeitung ala Word)
+					//TODO vllt entfernen
+					try
+					{
+						String content = "";
+						Scanner s = new Scanner(targetFile);
+						while (s.hasNext())
 						{
-							public void actionPerformed(ActionEvent e)
-							{
-								if (!styles.isEmpty())
-								{
-									styles.clear();
-									removeTargetBox.removeAllItems();
-									editTargetBox.removeAllItems();
-									System.out.println("Styles zurückgesetzt");
-								}
-								JFileChooser chooser = new JFileChooser();
-								chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
-								chooser.setDialogTitle("Wähle das Style-File");
-								chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
+							content += content.equals("") ? s.nextLine() : System.getProperty("line.separator") + s.nextLine();
+						}
+						textEditing.setText(content);
+						s.close();
+						PopoutMessager.showTextLoadedDialogue(targetFile.getName());
+					}
+					catch (FileNotFoundException e1)
+					{
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 
-								if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-								{
-									styleFile = chooser.getSelectedFile();
+		JButton btnImportStyleFile = new JButton("Style-File laden");
+		btnImportStyleFile.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (!styles.isEmpty())
+				{
+					styles.clear();
+					removeTargetBox.removeAllItems();
+					editTargetBox.removeAllItems();
+					PopoutMessager.messageCmdOnly("Styles zurückgesetzt", false);				
+				}
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
+				chooser.setDialogTitle("Wähle das Style-File");
+				chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
-									try
-									{
-										IOHandler.loadStyles(styleFile, removeTargetBox, editTargetBox);
-									}
-									catch (IOException e1)
-									{
-										e1.printStackTrace();
-									}
-								}
-							}
-						});
-						SpringLayout sl_mainPanel = new SpringLayout();
-						sl_mainPanel.putConstraint(SpringLayout.NORTH, btnApplyStyleTo, 0, SpringLayout.NORTH, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.WEST, btnApplyStyleTo, 207, SpringLayout.WEST, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnApplyStyleTo, 53, SpringLayout.NORTH, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.EAST, btnApplyStyleTo, 431, SpringLayout.WEST, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.NORTH, btnImportStyleFile, 0, SpringLayout.NORTH, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.WEST, btnImportStyleFile, 0, SpringLayout.WEST, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnImportStyleFile, 53, SpringLayout.NORTH, mainPanel);
-						sl_mainPanel.putConstraint(SpringLayout.EAST, btnImportStyleFile, 202, SpringLayout.WEST, mainPanel);
-						mainPanel.setLayout(sl_mainPanel);
-						mainPanel.add(btnImportStyleFile);
-				mainPanel.add(btnApplyStyleTo);
+				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+				{
+					styleFile = chooser.getSelectedFile();
+
+					try
+					{
+						IOHandler.loadStyles(styleFile, removeTargetBox, editTargetBox);
+					}
+					catch (IOException e1)
+					{
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		SpringLayout sl_mainPanel = new SpringLayout();
+		sl_mainPanel.putConstraint(SpringLayout.NORTH, btnApplyStyleTo, 0, SpringLayout.NORTH, btnImportStyleFile);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnApplyStyleTo, 0, SpringLayout.SOUTH, btnImportStyleFile);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, btnApplyStyleTo, 0, SpringLayout.EAST, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.NORTH, btnImportStyleFile, 0, SpringLayout.NORTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, btnImportStyleFile, 0, SpringLayout.WEST, mainPanel);
+		mainPanel.setLayout(sl_mainPanel);
+		mainPanel.add(btnImportStyleFile);
+		mainPanel.add(btnApplyStyleTo);
+		
+		JSeparator separator = new JSeparator();
+		separator.setVisible(false);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, btnApplyStyleTo, 0, SpringLayout.EAST, separator);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, btnImportStyleFile, 0, SpringLayout.WEST, separator);
+		sl_mainPanel.putConstraint(SpringLayout.NORTH, separator, 0, SpringLayout.NORTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, separator, 0, SpringLayout.SOUTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.HORIZONTAL_CENTER, separator, 0, SpringLayout.HORIZONTAL_CENTER, mainPanel);
+		mainPanel.add(separator);
+		
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setVisible(false);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnImportStyleFile, -60, SpringLayout.NORTH, separator_1);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, separator_1, 0, SpringLayout.WEST, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, separator_1, 0, SpringLayout.EAST, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.VERTICAL_CENTER, separator_1, 0, SpringLayout.VERTICAL_CENTER, mainPanel);
+		mainPanel.add(separator_1);
 
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Style-File", null, tabbedPane_1, null);
+
+		JButton btnNewButton = new JButton("Speichern");
+		btnNewButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					IOHandler.saveStyles(styleFile);
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+		});
 
 		JPanel addStylePanel = new JPanel();
 		tabbedPane_1.addTab("Style hinzuf\u00FCgen", null, addStylePanel, null);
@@ -187,17 +284,20 @@ public class Main
 		addStylePanel.setLayout(sl_addStylePanel);
 
 		JLabel label = new JLabel("Schriftart");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, label, 9, SpringLayout.NORTH, addStylePanel);
 		label.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		addStylePanel.add(label);
 
 		JLabel label_1 = new JLabel("Schriftgr\u00F6\u00DFe");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, label_1, 0, SpringLayout.NORTH, label);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, label_1, 83, SpringLayout.EAST, label);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, label_1, 0, SpringLayout.SOUTH, label);
 		addStylePanel.add(label_1);
 
 		final JComboBox typeBox = new JComboBox();
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, typeBox, 6, SpringLayout.SOUTH, label);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, typeBox, 120, SpringLayout.WEST, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, label, -15, SpringLayout.NORTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, label, 0, SpringLayout.NORTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, typeBox, 26, SpringLayout.NORTH, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, typeBox, 46, SpringLayout.NORTH, addStylePanel);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, label, 0, SpringLayout.WEST, typeBox);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, typeBox, 5, SpringLayout.WEST, addStylePanel);
 		typeBox.setModel(new DefaultComboBoxModel(new String[] { "Times New Roman", "Arial", "Calibri" }));
@@ -206,32 +306,43 @@ public class Main
 		addStylePanel.add(typeBox);
 
 		final JComboBox sizeBox = new JComboBox();
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, sizeBox, 6, SpringLayout.SOUTH, label_1);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, sizeBox, 0, SpringLayout.WEST, label_1);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, sizeBox, -10, SpringLayout.EAST, label_1);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, sizeBox, 55, SpringLayout.EAST, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, label_1, 75, SpringLayout.WEST, sizeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, sizeBox, 10, SpringLayout.EAST, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, label_1, 0, SpringLayout.WEST, sizeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, sizeBox, 0, SpringLayout.NORTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, sizeBox, 0, SpringLayout.SOUTH, typeBox);
 		sizeBox.setModel(new DefaultComboBoxModel(new String[] { "11", "12", "13", "14", "15", "16", "17", "18" }));
 		sizeBox.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		sizeBox.setEditable(true);
 		addStylePanel.add(sizeBox);
 
 		final JCheckBox underlinedBox = new JCheckBox("Unterstrichen");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, underlinedBox, 30, SpringLayout.SOUTH, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, underlinedBox, 5, SpringLayout.WEST, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, underlinedBox, 25, SpringLayout.SOUTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, underlinedBox, 0, SpringLayout.WEST, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, underlinedBox, 40, SpringLayout.SOUTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, underlinedBox, 110, SpringLayout.WEST, typeBox);
 		addStylePanel.add(underlinedBox);
 
 		final JCheckBox boldBox = new JCheckBox("Fett");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, boldBox, 0, SpringLayout.NORTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, boldBox, 89, SpringLayout.EAST, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, boldBox, 20, SpringLayout.EAST, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, boldBox, 0, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, boldBox, 70, SpringLayout.EAST, underlinedBox);
 		addStylePanel.add(boldBox);
 
 		final JCheckBox cursiveBox = new JCheckBox("Kursiv");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, cursiveBox, 0, SpringLayout.NORTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, cursiveBox, 91, SpringLayout.EAST, boldBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, cursiveBox, 10, SpringLayout.EAST, boldBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, cursiveBox, 0, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, cursiveBox, 80, SpringLayout.EAST, boldBox);
 		addStylePanel.add(cursiveBox);
 
 		final JComboBox formatBox = new JComboBox();
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, formatBox, 215, SpringLayout.WEST, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, formatBox, 35, SpringLayout.EAST, sizeBox);
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, formatBox, 0, SpringLayout.NORTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, formatBox, 0, SpringLayout.SOUTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, formatBox, 130, SpringLayout.EAST, sizeBox);
 		formatBox.setModel(new DefaultComboBoxModel(new String[] { "Linksb\u00FCndig", "Zentriert", "Rechtsb\u00FCndig", "Blocksatz" }));
 		formatBox.setMaximumRowCount(4);
 		addStylePanel.add(formatBox);
@@ -239,17 +350,22 @@ public class Main
 		JLabel label_2 = new JLabel("Ausrichtung");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, label_2, 0, SpringLayout.NORTH, label);
 		sl_addStylePanel.putConstraint(SpringLayout.WEST, label_2, 0, SpringLayout.WEST, formatBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, label_2, 0, SpringLayout.SOUTH, label);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, label_2, 0, SpringLayout.EAST, formatBox);
 		addStylePanel.add(label_2);
 
 		JLabel lblHervorhebung = new JLabel("Hervorhebungen");
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblHervorhebung, 162, SpringLayout.WEST, addStylePanel);
-		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblHervorhebung, -6, SpringLayout.NORTH, boldBox);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblHervorhebung, 5, SpringLayout.SOUTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblHervorhebung, 80, SpringLayout.WEST, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblHervorhebung, 25, SpringLayout.SOUTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, lblHervorhebung, 180, SpringLayout.WEST, addStylePanel);
 		addStylePanel.add(lblHervorhebung);
 
 		final JComboBox linedistanceBox = new JComboBox();
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, linedistanceBox, 0, SpringLayout.NORTH, typeBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, linedistanceBox, 0, SpringLayout.WEST, cursiveBox);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, linedistanceBox, 81, SpringLayout.WEST, cursiveBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, linedistanceBox, 10, SpringLayout.EAST, formatBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, linedistanceBox, 0, SpringLayout.SOUTH, typeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, linedistanceBox, 60, SpringLayout.EAST, formatBox);
 		linedistanceBox.setEditable(true);
 		linedistanceBox.setMaximumRowCount(4);
 		linedistanceBox.setModel(new DefaultComboBoxModel(new String[] { "0", "1", "1.5", "2" }));
@@ -257,18 +373,19 @@ public class Main
 		addStylePanel.add(linedistanceBox);
 
 		JButton btnHinzufgen = new JButton("Hinzuf\u00FCgen");
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, btnHinzufgen, -10, SpringLayout.EAST, linedistanceBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, btnHinzufgen, 0, SpringLayout.WEST, linedistanceBox);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, btnHinzufgen, 100, SpringLayout.WEST, linedistanceBox);
 		btnHinzufgen.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				if (styleFile == null)
 				{
-					PopoutMessenger.showNoStyleFileDialogue();
+					PopoutMessager.showNoStyleFileDialogue();
 				}
 				else if (styles.containsKey(identifierField.getText()))
 				{
-					PopoutMessenger.showStyleIdentifierOccupiedDialogue(identifierField.getText());
+					PopoutMessager.showStyleIdentifierOccupiedDialogue(identifierField.getText());
 				}
 				else
 				{
@@ -281,11 +398,11 @@ public class Main
 										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
 						removeTargetBox.addItem(identifierField.getText());
 						editTargetBox.addItem(identifierField.getText());
-						PopoutMessenger.showStyleAddedDialogue(identifierField.getText());
+						PopoutMessager.showStyleAddedDialogue(identifierField.getText());
 					}
 					catch (NumberFormatException e1)
 					{
-						PopoutMessenger.showNumberFormatDialogue();
+						PopoutMessager.showNumberFormatDialogue();
 					}
 				}
 			}
@@ -294,30 +411,38 @@ public class Main
 
 		JLabel lblZeilenabstand = new JLabel("Zeilenabstand");
 		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblZeilenabstand, 0, SpringLayout.NORTH, label);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblZeilenabstand, 0, SpringLayout.WEST, cursiveBox);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblZeilenabstand, 0, SpringLayout.WEST, linedistanceBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblZeilenabstand, 0, SpringLayout.SOUTH, label);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, lblZeilenabstand, 80, SpringLayout.WEST, linedistanceBox);
 		addStylePanel.add(lblZeilenabstand);
 
 		identifierField = new JTextField();
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, identifierField, 5, SpringLayout.WEST, addStylePanel);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, btnHinzufgen, 0, SpringLayout.NORTH, identifierField);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, btnHinzufgen, 0, SpringLayout.SOUTH, identifierField);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, identifierField, 0, SpringLayout.WEST, typeBox);
 		sl_addStylePanel.putConstraint(SpringLayout.EAST, identifierField, 72, SpringLayout.WEST, addStylePanel);
 		identifierField.setText("$");
 		addStylePanel.add(identifierField);
 		identifierField.setColumns(10);
 
 		JLabel lblId = new JLabel("Identifier");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, btnHinzufgen, 6, SpringLayout.SOUTH, lblId);
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblId, 7, SpringLayout.SOUTH, underlinedBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblId, 5, SpringLayout.WEST, addStylePanel);
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, identifierField, 6, SpringLayout.SOUTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblId, 10, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblId, 30, SpringLayout.SOUTH, underlinedBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, identifierField, 20, SpringLayout.SOUTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, identifierField, 0, SpringLayout.SOUTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblId, 0, SpringLayout.WEST, typeBox);
 		addStylePanel.add(lblId);
 
-		JLabel lblNewLabel = new JLabel("Schriftfarbe");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblNewLabel, 6, SpringLayout.SOUTH, boldBox);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblNewLabel, 91, SpringLayout.EAST, lblId);
-		addStylePanel.add(lblNewLabel);
+		JLabel lblColor = new JLabel("Schriftfarbe");
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, lblColor, 0, SpringLayout.NORTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, lblColor, 0, SpringLayout.WEST, sizeBox);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, lblColor, 0, SpringLayout.SOUTH, lblId);
+		addStylePanel.add(lblColor);
 
 		colorField = new JTextField();
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, colorField, 6, SpringLayout.SOUTH, lblId);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, colorField, 0, SpringLayout.NORTH, identifierField);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, colorField, 0, SpringLayout.SOUTH, identifierField);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, colorField, 110, SpringLayout.WEST, lblColor);
 		colorField.addKeyListener(new KeyAdapter()
 		{
 			@Override
@@ -341,15 +466,16 @@ public class Main
 				colorField.setText(s);
 			}
 		});
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, colorField, 0, SpringLayout.WEST, lblNewLabel);
-		sl_addStylePanel.putConstraint(SpringLayout.EAST, colorField, -22, SpringLayout.EAST, lblHervorhebung);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, colorField, 0, SpringLayout.WEST, lblColor);
 		colorField.setText("0,0,0");
 		addStylePanel.add(colorField);
 		colorField.setColumns(10);
 
 		JButton btnFarbauswahl = new JButton("Farbauswahl");
-		sl_addStylePanel.putConstraint(SpringLayout.NORTH, btnFarbauswahl, 6, SpringLayout.SOUTH, colorField);
-		sl_addStylePanel.putConstraint(SpringLayout.WEST, btnFarbauswahl, 0, SpringLayout.WEST, lblNewLabel);
+		sl_addStylePanel.putConstraint(SpringLayout.NORTH, btnFarbauswahl, 0, SpringLayout.SOUTH, colorField);
+		sl_addStylePanel.putConstraint(SpringLayout.WEST, btnFarbauswahl, 0, SpringLayout.WEST, colorField);
+		sl_addStylePanel.putConstraint(SpringLayout.SOUTH, btnFarbauswahl, 20, SpringLayout.SOUTH, colorField);
+		sl_addStylePanel.putConstraint(SpringLayout.EAST, btnFarbauswahl, 0, SpringLayout.EAST, colorField);
 		btnFarbauswahl.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -363,22 +489,6 @@ public class Main
 			}
 		});
 		addStylePanel.add(btnFarbauswahl);
-
-		JButton btnNewButton = new JButton("Speichern");
-		btnNewButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				try
-				{
-					IOHandler.saveStyles(styleFile);
-				}
-				catch (IOException e1)
-				{
-					e1.printStackTrace();
-				}
-			}
-		});
 
 		JPanel editStylePanel = new JPanel();
 		tabbedPane_1.addTab("Style bearbeiten", null, editStylePanel, null);
@@ -448,7 +558,7 @@ public class Main
 			{
 				if (styleFile == null)
 				{
-					PopoutMessenger.showNoStyleFileDialogue();
+					PopoutMessager.showNoStyleFileDialogue();
 				}
 				else if (editTargetBox.getSelectedItem() != null && styles.containsKey(String.valueOf(editTargetBox.getSelectedItem())))
 				{
@@ -460,11 +570,11 @@ public class Main
 										Short.parseShort(String.valueOf(formatBox_1.getSelectedItem()).replace("Linksb\u00FCndig", "0").replace("Zentriert", "1").replace("Rechtsb\u00FCndig", "2").replace("Blocksatz", "3")), cursiveBox_1.isSelected(), underlinedBox_1.isSelected(),
 										boldBox_1.isSelected(), Float.parseFloat(String.valueOf(linedistanceBox_1.getSelectedItem()).replace(',', '.')), Float.parseFloat(String.valueOf(sizeBox_1.getSelectedItem()).replace(',', '.')),
 										new Color(Integer.parseInt(colorValues[0]), Integer.parseInt(colorValues[1]), Integer.parseInt(colorValues[2]))));
-						PopoutMessenger.showStyleEditedDialogue(identifierField.getText());
+						PopoutMessager.showStyleEditedDialogue(identifierField.getText());
 					}
 					catch (NumberFormatException e1)
 					{
-						PopoutMessenger.showNumberFormatDialogue();
+						PopoutMessager.showNumberFormatDialogue();
 					}
 				}
 			}
@@ -545,16 +655,16 @@ public class Main
 			{
 				if (styleFile == null)
 				{
-					PopoutMessenger.showNoStyleFileDialogue();
+					PopoutMessager.showNoStyleFileDialogue();
 				}
 				else if (styles.isEmpty())
 				{
-					PopoutMessenger.showNoStylesDialogue();
+					PopoutMessager.showNoStylesDialogue();
 				}
 				else
 				{
 					styles.remove(String.valueOf(removeTargetBox.getSelectedItem()));
-					PopoutMessenger.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
+					PopoutMessager.showStyleRemovedDialogue(String.valueOf(removeTargetBox.getSelectedItem()));
 					removeTargetBox.removeAllItems();
 					Iterator<String> it = styles.keySet().iterator();
 					while (it.hasNext())
@@ -566,17 +676,17 @@ public class Main
 		});
 		removeStylePanel.add(removeStyleButton);
 		tabbedPane_1.addTab("Speichern", null, btnNewButton, null);
-		
+
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Textbearbeitung", null, panel, null);
 		SpringLayout sl_panel = new SpringLayout();
 		panel.setLayout(sl_panel);
-		
+
 		textEditing = new JTextArea();
 		sl_panel.putConstraint(SpringLayout.SOUTH, textEditing, -10, SpringLayout.SOUTH, panel);
 		textEditing.setText("Lade eine Textdatei");
 		panel.add(textEditing);
-		
+
 		JToolBar toolBar = new JToolBar();
 		sl_panel.putConstraint(SpringLayout.EAST, toolBar, -10, SpringLayout.EAST, panel);
 		sl_panel.putConstraint(SpringLayout.WEST, textEditing, 0, SpringLayout.WEST, toolBar);
@@ -585,10 +695,10 @@ public class Main
 		sl_panel.putConstraint(SpringLayout.WEST, toolBar, 10, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.NORTH, textEditing, 0, SpringLayout.SOUTH, toolBar);
 		panel.add(toolBar);
-		
+
 		JButton btnNewButton_1 = new JButton("Style w\u00E4hlen");
 		toolBar.add(btnNewButton_1);
-		
+
 		JButton btnNewButton_2 = new JButton("Liste erstellen");
 		toolBar.add(btnNewButton_2);
 	}

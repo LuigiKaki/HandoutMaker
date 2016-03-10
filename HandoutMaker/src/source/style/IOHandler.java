@@ -11,7 +11,7 @@ import java.util.Scanner;
 import javax.swing.JComboBox;
 
 import source.Main;
-import source.PopoutMessenger;
+import source.PopoutMessager;
 
 public class IOHandler
 {
@@ -19,7 +19,7 @@ public class IOHandler
 	{
 		if(f == null)
 		{
-			PopoutMessenger.showNoStyleFileDialogue();
+			PopoutMessager.showNoStyleFileDialogue();
 
 		}
 		else
@@ -32,14 +32,14 @@ public class IOHandler
 				{
 					Style style = it.next();
 					writer.write(style.toString() + System.getProperty("line.separator"));
-					System.out.println("Style " + style.identifier + " in Style-File " + f.getName() + " geschrieben");
+					PopoutMessager.messageCmdOnly("Style " + style.identifier + " in Style-File " + f.getName() + " geschrieben", false);
 				}
 				writer.close();
-				PopoutMessenger.showSavedStyleFileDialogue(f.getName());
+				PopoutMessager.showSavedStyleFileDialogue(f.getName());
 			}
 			else
 			{
-				PopoutMessenger.showNoStylesDialogue();
+				PopoutMessager.showNoStylesDialogue();
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class IOHandler
 
 			if (style.identifier.equals(""))
 			{
-				System.err.println("Error: Fehler beim Laden des Style-Identifiers");
+				PopoutMessager.messageCmdOnly("Error: Fehler beim Laden des Style-Identifiers", true);			
 				continue;
 			}
 
@@ -93,16 +93,19 @@ public class IOHandler
 						style.bold = Boolean.parseBoolean(content[i].substring(content[i].indexOf("=") + 1, content[i].length()).trim());
 						break;
 					default:
-						System.err.println("Error: Fehler beim Laden des Styleelements an der Stelle " + i);
+						PopoutMessager.messageCmdOnly("Error: Fehler beim Laden des Styleelements an der Stelle " + i, true);					
 						break;
 				}
 			}
 			Main.styles.put(style.identifier, style);
-			removeList.addItem(style.identifier);
-			editList.addItem(style.identifier);
-			System.out.println("Style " + style.identifier + " hinzugefügt");
+			if(Main.guiMode)
+			{
+				removeList.addItem(style.identifier);
+				editList.addItem(style.identifier);
+			}	
+			PopoutMessager.messageCmdOnly("Style " + style.identifier + " hinzugefügt", false);		
 		}
 		scanner.close();
-		PopoutMessenger.showStyleFileLoadedDialogue(f.getName());
+		PopoutMessager.showStyleFileLoadedDialogue(f.getName());
 	}
 }
