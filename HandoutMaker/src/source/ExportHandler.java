@@ -6,11 +6,13 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+import org.apache.xerces.dom.ParentNode;
 import org.odftoolkit.odfdom.dom.OdfContentDom;
 import org.odftoolkit.odfdom.dom.OdfStylesDom;
 import org.odftoolkit.odfdom.dom.attribute.style.StyleTextUnderlineColorAttribute;
 import org.odftoolkit.odfdom.dom.attribute.style.StyleTextUnderlineStyleAttribute;
 import org.odftoolkit.odfdom.dom.attribute.style.StyleTextUnderlineWidthAttribute;
+import org.odftoolkit.odfdom.dom.element.office.OfficeTextElement;
 import org.odftoolkit.odfdom.dom.style.OdfStyleFamily;
 import org.odftoolkit.odfdom.dom.style.props.OdfParagraphProperties;
 import org.odftoolkit.odfdom.dom.style.props.OdfTextProperties;
@@ -20,6 +22,7 @@ import org.odftoolkit.odfdom.incubator.doc.style.OdfStyle;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.text.Paragraph;
+import org.w3c.dom.Node;
 
 import source.exceptions.StyleNotFoundException;
 import source.style.Style;
@@ -53,7 +56,15 @@ public class ExportHandler
 		stylesDom = doc.getStylesDom();
 		contentAutoStyles = contentDom.getOrCreateAutomaticStyles();
 		stylesOfficestyles = doc.getOrCreateDocumentStyles();
+		OfficeTextElement officeText = doc.getContentRoot();
 		loadedStyles = new ArrayList<>();
+
+		//Löschen der ersten leeren Zeile, die in jedem Doc erscheint
+		Node childNode = officeText.getFirstChild();
+		while (childNode != null) {
+			officeText.removeChild(childNode);
+			childNode = officeText.getFirstChild();
+		}
 
 	}
 
@@ -142,7 +153,7 @@ public class ExportHandler
 			odfstyle.setProperty(OdfTextProperties.FontStyle, FontStyle.ITALIC.toString());
 		}
 		//TODO Muss dynamisch gestaltet werden (Verwendung der Color-Klasse vom odftk in der Style.java Datei)
-		odfstyle.setProperty(OdfTextProperties.Color, style.getColorAsHex());
+		odfstyle.setProperty(OdfTextProperties.Color, style.color.toString());
 		odfstyle.setProperty(OdfParagraphProperties.LineSpacing, String.valueOf(style.lineDistance));
 		switch (style.format)
 		{
