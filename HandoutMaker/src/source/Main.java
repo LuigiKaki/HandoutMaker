@@ -43,8 +43,7 @@ import source.style.Style;
 public class Main
 {
 	public static HashMap<String, Style> styles = new HashMap<String, Style>();
-	public static boolean guiMode = true;
-	public static boolean allowMessages = true;
+	public static boolean guiMode = true, allowMessages = true, textMode = false;
 	
 	private File styleFile, targetFile;
 	private JFrame frmHandoutMaker;
@@ -66,13 +65,16 @@ public class Main
 			{
 				switch(args[i])
 				{
-					case "/nogui":
+					case "//nogui":
 						guiMode = false;
 						break;
-					case "/loud":
+					case "//loud":
 						allowMessages = true;
 						break;
-					case "/applyStyle":
+					case "//text":
+						textMode = true;
+						break;
+					case "//applyStyle":
 						
 						//TODO WIP
 						File f = new File(args[i+1]);
@@ -130,7 +132,7 @@ public class Main
 	private void initialize()
 	{
 		frmHandoutMaker = new JFrame();
-		frmHandoutMaker.setResizable(false);
+		frmHandoutMaker.setResizable(textMode);
 		frmHandoutMaker.setTitle("Handout Maker");
 		frmHandoutMaker.setBounds(100, 100, 450, 300);
 		frmHandoutMaker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,7 +151,7 @@ public class Main
 			public void actionPerformed(ActionEvent e)
 			{
 				JFileChooser chooser = new JFileChooser();
-				chooser.setFileFilter(new FileNameExtensionFilter("Text", "txt", "odt"));
+				chooser.setFileFilter(new FileNameExtensionFilter("Text", textMode ? "txt" : "odt"));
 				chooser.setDialogTitle("Wähle die Textdatei");
 				chooser.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
@@ -159,43 +161,46 @@ public class Main
 					
 					if(targetFile.getName().endsWith(".odt"))
 					{
-						try
+						if(textMode)
 						{
-							TempHelperClass.applyStyleToOdt(targetFile);
+							//TODO dein zeug
 						}
-						catch (Exception e1)
-						{
-							e1.printStackTrace();
+						else
+						{					
+							try
+							{
+								TempHelperClass.applyStyleToOdt(targetFile);
+							}
+							catch (Exception e1)
+							{
+								e1.printStackTrace();
+							}
 						}
 					}
 				
 					//TODO .txt handlind
 					if(targetFile.getName().endsWith(".txt"))
 					{
-						//deine funktionen einbauen
-					}
-					
-					
-					
-					
-					//Text Einlesen für Edit im Programm (Textbearbeitung ala Word)
-					//TODO vllt entfernen
-					try
-					{
-						String content = "";
-						Scanner s = new Scanner(targetFile);
-						while (s.hasNext())
+						if(textMode)
 						{
-							content += content.equals("") ? s.nextLine() : System.getProperty("line.separator") + s.nextLine();
-						}
-						textEditing.setText(content);
-						s.close();
-						PopoutMessager.showTextLoadedDialogue(targetFile.getName());
-					}
-					catch (FileNotFoundException e1)
-					{
-						e1.printStackTrace();
-					}
+							try
+							{
+								String content = "";
+								Scanner s = new Scanner(targetFile);
+								while (s.hasNext())
+								{
+									content += content.equals("") ? s.nextLine() : System.getProperty("line.separator") + s.nextLine();
+								}
+								textEditing.setText(content);
+								s.close();
+								PopoutMessager.showTextLoadedDialogue(targetFile.getName());
+							}
+							catch (FileNotFoundException e1)
+							{
+								e1.printStackTrace();
+							}
+						}					
+					}				
 				}
 			}
 		});
@@ -708,29 +713,32 @@ public class Main
 		removeStylePanel.add(removeStyleButton);
 		tabbedPane_1.addTab("Speichern", null, btnNewButton, null);
 
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Textbearbeitung", null, panel, null);
-		SpringLayout sl_panel = new SpringLayout();
-		panel.setLayout(sl_panel);
+		if(textMode)
+		{
+			JPanel panel = new JPanel();
+			tabbedPane.addTab("Textbearbeitung", null, panel, null);
+			SpringLayout sl_panel = new SpringLayout();
+			panel.setLayout(sl_panel);
 
-		textEditing = new JTextArea();
-		sl_panel.putConstraint(SpringLayout.SOUTH, textEditing, -10, SpringLayout.SOUTH, panel);
-		textEditing.setText("Lade eine Textdatei");
-		panel.add(textEditing);
+			textEditing = new JTextArea();
+			sl_panel.putConstraint(SpringLayout.SOUTH, textEditing, -10, SpringLayout.SOUTH, panel);
+			textEditing.setText("Lade eine Textdatei");
+			panel.add(textEditing);
 
-		JToolBar toolBar = new JToolBar();
-		sl_panel.putConstraint(SpringLayout.EAST, toolBar, -10, SpringLayout.EAST, panel);
-		sl_panel.putConstraint(SpringLayout.WEST, textEditing, 0, SpringLayout.WEST, toolBar);
-		sl_panel.putConstraint(SpringLayout.EAST, textEditing, 0, SpringLayout.EAST, toolBar);
-		sl_panel.putConstraint(SpringLayout.NORTH, toolBar, 10, SpringLayout.NORTH, panel);
-		sl_panel.putConstraint(SpringLayout.WEST, toolBar, 10, SpringLayout.WEST, panel);
-		sl_panel.putConstraint(SpringLayout.NORTH, textEditing, 0, SpringLayout.SOUTH, toolBar);
-		panel.add(toolBar);
+			JToolBar toolBar = new JToolBar();
+			sl_panel.putConstraint(SpringLayout.EAST, toolBar, -10, SpringLayout.EAST, panel);
+			sl_panel.putConstraint(SpringLayout.WEST, textEditing, 0, SpringLayout.WEST, toolBar);
+			sl_panel.putConstraint(SpringLayout.EAST, textEditing, 0, SpringLayout.EAST, toolBar);
+			sl_panel.putConstraint(SpringLayout.NORTH, toolBar, 10, SpringLayout.NORTH, panel);
+			sl_panel.putConstraint(SpringLayout.WEST, toolBar, 10, SpringLayout.WEST, panel);
+			sl_panel.putConstraint(SpringLayout.NORTH, textEditing, 0, SpringLayout.SOUTH, toolBar);
+			panel.add(toolBar);
 
-		JButton btnNewButton_1 = new JButton("Style w\u00E4hlen");
-		toolBar.add(btnNewButton_1);
+			JButton btnNewButton_1 = new JButton("Style w\u00E4hlen");
+			toolBar.add(btnNewButton_1);
 
-		JButton btnNewButton_2 = new JButton("Liste erstellen");
-		toolBar.add(btnNewButton_2);
+			JButton btnNewButton_2 = new JButton("Liste erstellen");
+			toolBar.add(btnNewButton_2);
+		}
 	}
 }
